@@ -4,44 +4,56 @@
   :root {
     --font-serif: 'Cormorant Garamond', Georgia, serif;
     --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --bg-ecru: #F7F4EE;
+    --bg-paper: #EFEBE1;
+    --color-ink: #191716;
+    --color-tobacco: #874229;
+    --color-indigo: #202D3A;
   }
 
   body {
     font-family: var(--font-sans);
-    background-color: #FAF8F5;
-    color: #1A1A1A;
+    background-color: var(--bg-ecru);
+    color: var(--color-ink);
     overflow-x: hidden;
   }
 
-  h1, h2, h3, .font-editorial {
+  h1, h2, h3, h4, .font-editorial {
     font-family: var(--font-serif);
   }
 }
 
+/* Subtle Film Grain / Archival Paper Feel */
+.paper-texture {
+  background-color: #F7F4EE;
+  background-image: radial-gradient(#D6CEC2 0.75px, transparent 0.75px);
+  background-size: 16px 16px;
+}
+
 /* Custom luxury scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #FAF8F5;
+  background: #EFEBE1;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #C4BCB3;
+  background: #BAAF9F;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #1F2E3D;
+  background: #874229;
 }
 
-/* Haute Editorial Subtle Animations */
+/* Cinematic Transitions */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
