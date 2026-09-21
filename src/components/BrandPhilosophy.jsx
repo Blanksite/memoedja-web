@@ -36,42 +36,43 @@ export default function BrandPhilosophy() {
   ];
 
   return (
-    <section id="philosophy" className="py-28 px-6 bg-[#EFEAE1] border-b border-[#DDD5C7] paper-texture">
-      <div className="max-w-6xl mx-auto">
-        {/* Brand Pillars */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <span className="text-[10px] tracking-[0.4em] uppercase text-[#874229] font-mono block mb-3">
-            THE ARCHIVAL PILLARS
+    <section id="philosophy" className="py-28 px-6 md:px-12 bg-[#FFFFFF] border-b border-[#EFEFEF]">
+      <div className="max-w-7xl mx-auto">
+        {/* Brand Pillars Header */}
+        <div className="text-center max-w-2xl mx-auto mb-20">
+          <span className="text-[9.5px] tracking-[0.35em] uppercase text-[#777777] font-sans block mb-3">
+            BRAND ARCHITECTURE
           </span>
-          <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl font-light text-[#191716] tracking-tight mb-4">
+          <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl font-light text-[#000000] tracking-tight mb-4">
             Fondasi Brand Memoedja
           </h2>
-          <p className="text-xs sm:text-sm text-[#6E645A] font-light max-w-xl mx-auto leading-relaxed">
-            Menghubungkan kedalaman kultural Nusantara dengan gaya hidup masa kini melalui tiga pilar konstruksi.
+          <p className="text-xs sm:text-sm text-[#555555] font-light max-w-lg mx-auto leading-relaxed">
+            Menghubungkan kedalaman kultural Nusantara dengan ritme kehidupan modern melalui tiga pilar fundamental.
           </p>
         </div>
 
+        {/* Pillars Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
           {BRAND_PILLARS.map((pillar) => (
             <div
               key={pillar.number}
-              className="p-8 bg-[#F7F4EE] border border-[#DDD5C7] shadow-xs flex flex-col justify-between"
+              className="p-8 md:p-10 bg-[#FFFFFF] border border-[#EAEAEA] flex flex-col justify-between hover:border-black transition-colors"
             >
               <div>
-                <span className="font-mono text-xs text-[#874229] font-bold block mb-3">
+                <span className="font-mono text-xs text-black font-semibold block mb-3">
                   [{pillar.number}]
                 </span>
-                <h3 className="font-editorial text-2xl sm:text-3xl font-normal text-[#191716] mb-2">
+                <h3 className="font-editorial text-2xl sm:text-3xl font-light text-[#000000] mb-2">
                   {pillar.title}
                 </h3>
-                <p className="text-xs text-[#6E645A] italic mb-6 font-serif">
+                <p className="text-xs text-[#666666] italic mb-6 font-serif">
                   {pillar.subtitle}
                 </p>
 
-                <ul className="space-y-2.5 border-t border-[#DDD5C7] pt-4">
+                <ul className="space-y-2.5 border-t border-[#F0F0F0] pt-4">
                   {pillar.points.map((pt, idx) => (
-                    <li key={idx} className="text-xs text-[#5C534A] flex items-center gap-2 font-light">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#874229]" />
+                    <li key={idx} className="text-xs text-[#444444] flex items-center gap-2 font-light">
+                      <span className="w-1 h-1 rounded-full bg-black" />
                       <span>{pt}</span>
                     </li>
                   ))}
@@ -81,38 +82,38 @@ export default function BrandPhilosophy() {
           ))}
         </div>
 
-        {/* The Founding Team (Atelier Roster Style) */}
-        <div className="pt-16 border-t border-[#DDD5C7]">
+        {/* Founding Team */}
+        <div className="pt-16 border-t border-[#EAEAEA]">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="text-[10px] tracking-[0.4em] uppercase text-[#874229] font-mono block mb-2">
+            <span className="text-[9.5px] tracking-[0.35em] uppercase text-[#777777] font-sans block mb-2">
               THE ATELIER ROSTER
             </span>
-            <h3 className="font-editorial text-3xl sm:text-4xl font-light text-[#191716]">
+            <h3 className="font-editorial text-3xl sm:text-4xl font-light text-[#000000]">
               The Founding Team
             </h3>
-            <p className="text-xs text-[#6E645A] mt-2 font-light">
+            <p className="text-xs text-[#666666] mt-2 font-light">
               Kolaborasi lintas disiplin: brand architecture, supply chain, financial rigor, dan riset budaya autentik.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
             {team.map((member) => (
-              <div key={member.name} className="p-5 bg-[#F7F4EE] border border-[#DDD5C7] text-center flex flex-col justify-between">
+              <div key={member.name} className="p-5 bg-[#FFFFFF] border border-[#EAEAEA] text-center flex flex-col justify-between hover:border-black transition-colors">
                 <div>
-                  <div className="w-12 h-12 rounded-full bg-[#EAE4D6] text-[#874229] font-editorial text-xl font-bold flex items-center justify-center mx-auto mb-3 shadow-inner">
+                  <div className="w-12 h-12 rounded-full bg-[#F5F5F5] text-black font-editorial text-xl font-normal flex items-center justify-center mx-auto mb-3 border border-[#EAEAEA]">
                     {member.name.charAt(0)}
                   </div>
-                  <h4 className="font-editorial text-lg text-[#191716] font-normal leading-snug">
+                  <h4 className="font-editorial text-lg text-[#000000] font-light leading-snug">
                     {member.name}
                   </h4>
-                  <span className="text-[9px] tracking-[0.2em] uppercase font-mono font-bold text-[#874229] block mb-2">
+                  <span className="text-[8.5px] tracking-[0.2em] uppercase font-mono font-medium text-[#777777] block mb-2">
                     {member.role}
                   </span>
-                  <p className="text-[11px] text-[#6E645A] leading-relaxed mb-4 font-light">
+                  <p className="text-[11px] text-[#555555] leading-relaxed mb-4 font-light">
                     {member.bio}
                   </p>
                 </div>
-                <div className="pt-2 border-t border-[#DDD5C7] text-[9px] text-[#888] font-mono">
+                <div className="pt-2 border-t border-[#F0F0F0] text-[8.5px] text-[#888888] font-mono">
                   <strong>Projects:</strong> {member.project}
                 </div>
               </div>

@@ -3,57 +3,46 @@
 @layer base {
   :root {
     --font-serif: 'Cormorant Garamond', Georgia, serif;
-    --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
-    --bg-ecru: #F7F4EE;
-    --bg-paper: #EFEBE1;
-    --color-ink: #191716;
-    --color-tobacco: #874229;
-    --color-indigo: #202D3A;
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
   body {
     font-family: var(--font-sans);
-    background-color: var(--bg-ecru);
-    color: var(--color-ink);
+    background-color: #FFFFFF;
+    color: #000000;
     overflow-x: hidden;
   }
 
   h1, h2, h3, h4, .font-editorial {
     font-family: var(--font-serif);
+    font-weight: 300;
   }
 }
 
-/* Subtle Film Grain / Archival Paper Feel */
-.paper-texture {
-  background-color: #F7F4EE;
-  background-image: radial-gradient(#D6CEC2 0.75px, transparent 0.75px);
-  background-size: 16px 16px;
-}
-
-/* Custom luxury scrollbar */
+/* Custom Haute Luxury Scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #EFEBE1;
+  background: #FFFFFF;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #BAAF9F;
+  background: #D0D0D0;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #874229;
+  background: #000000;
 }
 
-/* Cinematic Transitions */
+/* Dior Subtle Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

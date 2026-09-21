@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Search, Sliders, Menu, X, Globe } from 'lucide-react';
+import { ShoppingBag, Menu, X, Search, Sliders, Globe } from 'lucide-react';
 
 export default function Navbar({
   cartCount,
@@ -10,7 +10,7 @@ export default function Navbar({
   setCurrency
 }) {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,166 +21,136 @@ export default function Navbar({
   }, []);
 
   const navLinks = [
-    { name: "TAROMBO", href: "#tarombo" },
-    { name: "SAVOIR-FAIRE", href: "#savoir-faire" },
-    { name: "COLLECTION", href: "#collection" },
-    { name: "ARCHIVES", href: "#philosophy" },
+    { name: "BOUTIQUE", href: "#boutique" },
+    { name: "OUR WORLD", href: "#philosophy" },
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 transition-all duration-500">
-      {/* Top Archival Header Bar */}
-      <div
-        className={`text-[9px] tracking-[0.3em] uppercase py-1.5 px-6 text-center font-medium transition-colors duration-500 flex items-center justify-between ${
+    <>
+      {/* Exact Dior Header: Transparent on Hero, Clean Minimalist on Scroll */}
+      <header
+        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           isScrolled
-            ? "bg-[#181615] text-[#D8CEBF] border-b border-[#2D2825]"
-            : "bg-black/30 backdrop-blur-xs text-[#E8E2D8] border-b border-white/10"
+            ? "bg-[#FFFFFF] py-4 border-b border-[#EAEAEA] text-[#000000] shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+            : "bg-transparent py-5 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]"
         }`}
       >
-        <span className="hidden md:inline-block opacity-70">NUSANTARA CULTURE STUDIO</span>
-        <span className="mx-auto flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#CBB597] animate-pulse" />
-          HONOR CONFERS A CROWN — PROLOGUE 01: TAROMBO ARCHIVE
-        </span>
-        <span className="hidden md:inline-block opacity-70">JAKARTA • EST. 2026</span>
-      </div>
-
-      {/* Main Navigation Bar */}
-      <div
-        className={`px-6 md:px-12 transition-all duration-500 ${
-          isScrolled
-            ? "bg-[#F7F4EE]/95 backdrop-blur-md py-4 border-b border-[#E0D9CC] shadow-sm text-[#191716]"
-            : "bg-gradient-to-b from-black/70 via-black/40 to-transparent py-6 text-white"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          {/* Left: Mobile Toggle & Curated Links */}
-          <div className="flex items-center gap-8">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 flex items-center justify-between">
+          {/* Left: Menu Icon */}
+          <div className="flex items-center">
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-1 focus:outline-none"
-              aria-label="Toggle Menu"
+              onClick={() => setMenuOpen(true)}
+              className="p-1.5 transition-opacity hover:opacity-60 focus:outline-none"
+              aria-label="Open Menu"
             >
-              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              <Menu size={20} strokeWidth={1.2} />
             </button>
-
-            <nav className="hidden md:flex items-center gap-7">
-              {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className={`text-[10px] tracking-[0.25em] uppercase font-medium transition-colors relative py-1 group ${
-                    isScrolled ? "text-[#3D3732] hover:text-[#874229]" : "text-white/85 hover:text-white"
-                  }`}
-                >
-                  {link.name}
-                  <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-[#874229] transition-all duration-300 group-hover:w-full" />
-                </a>
-              ))}
-            </nav>
           </div>
 
-          {/* Center: Brand Monogram (Bode / Aimé Leon Dore Roman Elegance) */}
+          {/* Center: Brand Logo (Exact Dior scale: small, elegant, serif) */}
           <div className="text-center">
-            <a href="#" className="inline-block group">
-              <h2 className="font-editorial text-2xl md:text-3xl tracking-[0.25em] font-normal transition-transform duration-300 group-hover:scale-[1.01]">
+            <a href="#" className="inline-block">
+              <h1 className="font-editorial text-xl md:text-2xl tracking-[0.25em] font-normal uppercase leading-none">
                 MEMOEDJA
-              </h2>
-              <span className={`block text-[7.5px] tracking-[0.45em] uppercase -mt-1 font-sans ${
-                isScrolled ? "text-[#7A7065]" : "text-white/60"
-              }`}>
-                CONTEMPORARY NUSANTARA
-              </span>
+              </h1>
             </a>
           </div>
 
-          {/* Right: Currency, Ops Matrix, Search & Shopping Bag */}
-          <div className="flex items-center gap-4 md:gap-6">
-            <button
-              onClick={() => setCurrency(currency === "IDR" ? "USD" : "IDR")}
-              className={`hidden sm:flex items-center gap-1.5 text-[10px] tracking-wider uppercase font-semibold px-2 py-1 rounded-none border transition-colors ${
-                isScrolled
-                  ? "border-[#D6CEC2] bg-[#EFEBE1] text-[#4A443D] hover:text-black"
-                  : "border-white/20 bg-black/30 text-white/90 hover:bg-black/50"
-              }`}
-              title="Toggle Currency"
-            >
-              <Globe size={11} />
-              {currency}
-            </button>
-
-            {/* Internal Ops Matrix */}
-            <button
-              onClick={onOpenInventory}
-              className={`hidden lg:flex items-center gap-1.5 text-[9.5px] tracking-widest uppercase font-semibold px-3 py-1.5 transition-all ${
-                isScrolled
-                  ? "bg-[#202D3A] text-white hover:bg-[#15202B]"
-                  : "border border-white/40 bg-black/40 text-white hover:bg-white hover:text-black"
-              }`}
-              title="Open Internal Ops Matrix"
-            >
-              <Sliders size={11} />
-              <span>OPS MATRIX</span>
-            </button>
-
-            {/* Search */}
+          {/* Right: Search & Shopping Bag */}
+          <div className="flex items-center gap-4">
             <button
               onClick={onOpenSearch}
-              className={`p-1.5 transition-colors ${
-                isScrolled ? "text-[#2A2A2A] hover:text-[#874229]" : "text-white hover:text-[#CBB597]"
-              }`}
-              aria-label="Search Collection"
+              className="p-1 transition-opacity hover:opacity-60 focus:outline-none"
+              aria-label="Search"
             >
-              <Search size={18} />
+              <Search size={18} strokeWidth={1.2} />
             </button>
 
-            {/* Bag Drawer */}
             <button
               onClick={onOpenCart}
-              className={`relative p-1.5 transition-colors flex items-center gap-1.5 ${
-                isScrolled ? "text-[#191716] hover:text-[#874229]" : "text-white hover:text-[#CBB597]"
-              }`}
-              aria-label="Shopping Bag"
+              className="relative p-1 transition-opacity hover:opacity-60 focus:outline-none"
+              aria-label="Bag"
             >
-              <ShoppingBag size={19} />
-              <span className="hidden sm:inline text-[10px] font-medium tracking-widest uppercase">
-                BAG
-              </span>
+              <ShoppingBag size={18} strokeWidth={1.2} />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1.5 bg-[#874229] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-pulse">
+                <span className={`absolute -top-1 -right-1 text-[8px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center ${
+                  isScrolled ? "bg-black text-white" : "bg-white text-black"
+                }`}>
                   {cartCount}
                 </span>
               )}
             </button>
           </div>
         </div>
+      </header>
 
-        {/* Mobile Dropdown Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden mt-4 pt-4 border-t border-white/20 animate-fade-in flex flex-col gap-3 pb-3 bg-black/90 p-4 rounded-sm">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-xs tracking-[0.25em] uppercase font-medium text-white py-1 hover:text-[#CBB597]"
-              >
-                {link.name}
-              </a>
-            ))}
-            <button
-              onClick={() => {
-                onOpenInventory();
-                setMobileMenuOpen(false);
-              }}
-              className="mt-2 w-full flex items-center justify-center gap-2 text-xs tracking-wider uppercase font-semibold text-white bg-[#874229] py-2 px-3"
-            >
-              <Sliders size={14} />
-              <span>Internal Ops Matrix</span>
-            </button>
+      {/* Slide-In Menu Drawer */}
+      {menuOpen && (
+        <div className="fixed inset-0 z-50 overflow-hidden animate-fade-in">
+          <div
+            className="absolute inset-0 bg-black/30 backdrop-blur-xs transition-opacity"
+            onClick={() => setMenuOpen(false)}
+          />
+
+          <div className="fixed inset-y-0 left-0 max-w-full flex pr-10">
+            <div className="w-screen max-w-md bg-[#FFFFFF] border-r border-[#EAEAEA] shadow-2xl p-8 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between pb-8 border-b border-[#EAEAEA]">
+                  <span className="font-editorial text-lg tracking-[0.25em] font-normal uppercase text-black">
+                    MEMOEDJA
+                  </span>
+                  <button
+                    onClick={() => setMenuOpen(false)}
+                    className="p-1 text-black hover:opacity-50"
+                  >
+                    <X size={18} strokeWidth={1.2} />
+                  </button>
+                </div>
+
+                <nav className="py-10 flex flex-col gap-6">
+                  {navLinks.map((link) => (
+                    <a
+                      key={link.name}
+                      href={link.href}
+                      onClick={() => setMenuOpen(false)}
+                      className="font-editorial text-2xl font-light tracking-[0.15em] uppercase text-black hover:opacity-50 transition-opacity"
+                    >
+                      {link.name}
+                    </a>
+                  ))}
+                </nav>
+              </div>
+
+              <div className="pt-8 border-t border-[#EAEAEA] space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => setCurrency(currency === "IDR" ? "USD" : "IDR")}
+                    className="flex items-center justify-center gap-1.5 text-[10px] tracking-wider uppercase font-mono p-2.5 border border-[#EAEAEA] hover:border-black transition-colors"
+                  >
+                    <Globe size={11} />
+                    <span>CURRENCY: {currency}</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      onOpenInventory();
+                    }}
+                    className="flex items-center justify-center gap-1.5 text-[10px] tracking-wider uppercase font-mono p-2.5 bg-black text-white hover:bg-black/80 transition-colors"
+                  >
+                    <Sliders size={11} />
+                    <span>OPS MATRIX</span>
+                  </button>
+                </div>
+
+                <div className="text-[9px] text-[#777777] font-mono uppercase tracking-widest text-center">
+                  JAKARTA • PARIS
+                </div>
+              </div>
+            </div>
           </div>
-        )}
-      </div>
-    </header>
+        </div>
+      )}
+    </>
   );
 }

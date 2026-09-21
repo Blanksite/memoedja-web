@@ -1,133 +1,130 @@
 import React from 'react';
-import { Quote, Sparkles, Music, Feather, Compass } from 'lucide-react';
+import { Quote } from 'lucide-react';
 
 export default function CulturalStory() {
   return (
-    <section id="tarombo" className="py-28 px-6 bg-[#F7F4EE] border-b border-[#E5DFD3] paper-texture">
-      <div className="max-w-6xl mx-auto">
-        {/* Curated Exhibition Monograph Header */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <span className="text-[10px] tracking-[0.4em] uppercase text-[#874229] font-mono block mb-3">
-            ARCHIVAL MONOGRAPH • REF. TRB-2026
+    <section id="tarombo" className="py-28 px-6 md:px-12 bg-[#FFFFFF] border-b border-[#EFEFEF]">
+      <div className="max-w-7xl mx-auto">
+        {/* Editorial Section Header: Pure Dior Haute Style */}
+        <div className="text-center max-w-2xl mx-auto mb-20">
+          <span className="text-[9.5px] tracking-[0.35em] uppercase text-[#777777] font-sans block mb-3">
+            THE PROLOGUE EXHIBITION
           </span>
-          <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl font-light text-[#191716] tracking-tight mb-4">
+          <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl font-light text-[#000000] tracking-tight mb-4">
             Tarombo: Pencarian Jati Diri
           </h2>
-          <p className="font-serif italic text-lg text-[#6E645A] max-w-xl mx-auto leading-relaxed">
+          <p className="font-serif italic text-base sm:text-lg text-[#555555] max-w-lg mx-auto leading-relaxed">
             "Not bringing back the past. Bringing back the feeling of knowing it."
           </p>
-          <div className="w-16 h-[1px] bg-[#874229] mx-auto mt-6" />
+          <div className="w-12 h-[1px] bg-black mx-auto mt-6" />
         </div>
 
-        {/* 50/50 Editorial Monograph Spread (Bode / Studio Style) */}
+        {/* 50/50 Dior Editorial Spread */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center mb-24">
-          {/* Plate 01: Archival Imagery with Museum Caption */}
+          {/* Left: Large Crisp Photography */}
           <div className="lg:col-span-6">
-            <div className="p-4 bg-[#EFEAE1] border border-[#DDD5C7] shadow-sm rounded-none">
-              <div className="relative aspect-[4/5] overflow-hidden bg-[#D8CEBF]">
-                <img
-                  src="https://images.unsplash.com/photo-1516257984-b1b4d707412e?q=80&w=1200&auto=format&fit=crop"
-                  alt="Tarombo Heritage Atmosphere"
-                  className="w-full h-full object-cover grayscale contrast-115 hover:scale-102 transition-transform duration-1000"
-                />
-                <div className="absolute top-4 left-4 bg-[#F7F4EE]/90 px-3 py-1 text-[9px] font-mono tracking-widest text-[#191716]">
-                  PLATE NO. 01 — SUMATERA UTARA
-                </div>
+            <div className="relative aspect-[4/5] overflow-hidden bg-[#F5F5F5] border border-[#EAEAEA]">
+              <img
+                src="https://images.unsplash.com/photo-1516257984-b1b4d707412e?q=80&w=1200&auto=format&fit=crop"
+                alt="Tarombo Heritage Atmosphere"
+                className="w-full h-full object-cover grayscale contrast-110 hover:scale-102 transition-transform duration-1000"
+              />
+              <div className="absolute top-4 left-4 bg-white/90 px-3 py-1 text-[8.5px] tracking-widest text-black uppercase font-mono">
+                PLATE NO. 01 — SUMATERA UTARA
               </div>
-              <div className="pt-4 flex items-center justify-between text-[10px] text-[#7A7065] font-mono">
-                <span>STUDIO RESEARCH DEPT.</span>
-                <span>BATAK CULTURAL LINEAGE</span>
-              </div>
+            </div>
+            <div className="pt-3 flex items-center justify-between text-[9px] text-[#777777] uppercase tracking-wider">
+              <span>TAROMBO NARRATIVE</span>
+              <span>BATAK CULTURAL PERSPECTIVE</span>
             </div>
           </div>
 
-          {/* Plate 01 Narration & Creative Formula */}
+          {/* Right: Thoughtful Text & Creative Formula */}
           <div className="lg:col-span-6 space-y-8 text-left">
             <div>
-              <span className="text-[10px] tracking-[0.25em] uppercase text-[#874229] font-bold block mb-2 font-mono">
-                [01] THE ESSENCE OF TAROMBO
+              <span className="text-[9.5px] tracking-[0.3em] uppercase text-[#000000] font-semibold block mb-2 font-mono">
+                [01] THE ESSENCE
               </span>
-              <h3 className="font-editorial text-2xl sm:text-3xl font-normal text-[#191716] leading-snug mb-4">
+              <h3 className="font-editorial text-2xl sm:text-3xl font-light text-[#000000] leading-snug mb-4">
                 Silsilah Garis Keturunan sebagai Titik Tolak Eksplorasi
               </h3>
-              <p className="text-xs sm:text-sm text-[#5C534A] leading-relaxed font-light">
-                Dalam tradisi Batak, Tarombo bukan sekadar silsilah nama, melainkan cara seseorang memahami tempatnya berdiri di antara leluhur dan masa depan. Memoedja meminjam filosofi ini sebagai kompas rancang bangun pakaian: setiap benang dan lipatan denim menyimpan memori perjalanan pemakainya.
+              <p className="text-xs sm:text-sm text-[#444444] leading-relaxed font-light">
+                Dalam tradisi Batak, Tarombo bukan sekadar silsilah nama, melainkan cara seseorang memahami posisinya di antara masa lalu dan masa depan. Memoedja mengadopsi filosofi ini ke dalam rancang bangun pakaian: setiap benang dan lipatan denim menyimpan memori perjalanan pemakainya.
               </p>
             </div>
 
-            {/* Bode-style Creative Formula Card */}
-            <div className="p-6 bg-[#EFEAE1] border border-[#DDD5C7]">
-              <span className="text-[9px] tracking-[0.25em] uppercase text-[#874229] font-bold block mb-2 font-mono">
-                THE MEMOEDJA FORMULA
+            {/* Creative Formula Minimalist Box */}
+            <div className="p-6 bg-[#FAFAFA] border border-[#EAEAEA]">
+              <span className="text-[9px] tracking-[0.25em] uppercase text-[#777777] font-semibold block mb-2">
+                THE CREATIVE FORMULA
               </span>
-              <div className="font-editorial text-xl sm:text-2xl text-[#191716] tracking-wide mb-2 leading-tight">
-                Past Language + Present Behavior + Shared Human Habit = <span className="underline decoration-[#874229]">Familiarity</span>
+              <div className="font-editorial text-xl sm:text-2xl text-[#000000] tracking-wide mb-2 leading-tight">
+                Past Language + Present Behavior + Shared Human Habit = <span className="underline decoration-black">Familiarity</span>
               </div>
-              <p className="text-xs text-[#6B6157] leading-relaxed font-light mt-2">
-                "Different Generation. Different Way. Same Habit. Same Feeling." Kami mencari hal yang kontras di permukaan, lalu mempertemukannya pada esensi manusiawi yang paling jujur.
+              <p className="text-xs text-[#555555] leading-relaxed font-light mt-2">
+                Different Generation. Different Way. Same Habit. Same Feeling. Menemukan dua hal yang kontras di permukaan, lalu mempertemukannya pada esensi manusiawi yang paling abadi.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Thought Experiments: The Row & Sade Quotes (Aimé Leon Dore Editorial Look) */}
+        {/* Thought Experiments: Dior Minimalist Monochrome Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-          <div className="p-8 bg-[#EFEAE1] border border-[#DDD5C7] relative flex flex-col justify-between">
-            <Quote className="text-[#874229]/20 absolute top-6 right-6" size={42} />
+          <div className="p-8 md:p-10 bg-[#FFFFFF] border border-[#EAEAEA] relative flex flex-col justify-between hover:border-black transition-colors">
+            <Quote className="text-black/10 absolute top-6 right-6" size={40} />
             <div>
-              <span className="text-[9px] tracking-[0.3em] uppercase text-[#7A7065] font-mono block mb-3">
-                THESIS REF. A
+              <span className="text-[9px] tracking-[0.3em] uppercase text-[#777777] font-mono block mb-3">
+                THOUGHT EXPERIMENT 01
               </span>
-              <h4 className="font-editorial text-2xl sm:text-3xl text-[#191716] font-normal leading-snug mb-4">
+              <h4 className="font-editorial text-2xl sm:text-3xl text-[#000000] font-light leading-snug mb-4">
                 "What if The Row was born in Indonesia, or Ralph Lauren was seen through an Indonesian lens?"
               </h4>
-              <p className="text-xs text-[#5C534A] leading-relaxed font-light">
-                Bukan dengan menjadikan kain adat sebagai kostum pesta yang kaku, melainkan mengadopsi ketahanan serat alam, ketepatan proporsi tubuh, dan kejujuran konstruksi harian.
+              <p className="text-xs text-[#555555] leading-relaxed font-light">
+                Kemewahan yang tidak berteriak (*quiet luxury*). Bukan dengan menempelkan ornamen kain adat secara harfiah, melainkan meminjam ketelitian jahitan, ketahanan serat tenun, dan keanggunan proporsi tubuh Nusantara.
               </p>
             </div>
-            <div className="pt-6 mt-6 border-t border-[#DDD5C7] text-[10px] tracking-wider uppercase text-[#7A7065] font-mono">
+            <div className="pt-6 mt-6 border-t border-[#F0F0F0] text-[9.5px] tracking-widest uppercase text-[#777777]">
               PARADIGMA SILUET KONTEMPORER
             </div>
           </div>
 
-          <div className="p-8 bg-[#EFEAE1] border border-[#DDD5C7] relative flex flex-col justify-between">
-            <Quote className="text-[#874229]/20 absolute top-6 right-6" size={42} />
+          <div className="p-8 md:p-10 bg-[#FFFFFF] border border-[#EAEAEA] relative flex flex-col justify-between hover:border-black transition-colors">
+            <Quote className="text-black/10 absolute top-6 right-6" size={40} />
             <div>
-              <span className="text-[9px] tracking-[0.3em] uppercase text-[#7A7065] font-mono block mb-3">
-                THESIS REF. B
+              <span className="text-[9px] tracking-[0.3em] uppercase text-[#777777] font-mono block mb-3">
+                THOUGHT EXPERIMENT 02
               </span>
-              <h4 className="font-editorial text-2xl sm:text-3xl text-[#191716] font-normal leading-snug mb-4">
+              <h4 className="font-editorial text-2xl sm:text-3xl text-[#000000] font-light leading-snug mb-4">
                 "What if Sade was born in Indonesia?"
               </h4>
-              <p className="text-xs text-[#5C534A] leading-relaxed font-light">
-                Sensibilitas yang bersahaja, suara yang berwibawa namun tenang, keanggunan tanpa paksaan, dan daya tarik yang menolak lekang oleh pergantian dekade.
+              <p className="text-xs text-[#555555] leading-relaxed font-light">
+                Kharisma yang bersahaja, suara yang berwibawa namun intim, keanggunan tanpa paksaan, dan daya tarik yang menolak lekang oleh pergantian zaman.
               </p>
             </div>
-            <div className="pt-6 mt-6 border-t border-[#DDD5C7] text-[10px] tracking-wider uppercase text-[#7A7065] font-mono">
+            <div className="pt-6 mt-6 border-t border-[#F0F0F0] text-[9.5px] tracking-widest uppercase text-[#777777]">
               ESTETIKA TIMELESS & BERSAHAJA
             </div>
           </div>
         </div>
 
-        {/* Cultural Validation Strip */}
-        <div className="p-6 sm:p-8 bg-[#202D3A] text-[#F7F4EE] rounded-none flex flex-col md:flex-row items-center justify-between gap-6">
+        {/* Cultural Shift Banner (Pure White / Black Accent) */}
+        <div className="p-8 bg-[#000000] text-white flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-2 text-left">
-            <div className="flex items-center gap-2 text-[9px] tracking-[0.3em] uppercase text-[#CBB597] font-mono">
-              <Music size={13} />
-              <span>MODERN NOSTALGIA AS A SHARED DIALECT</span>
-            </div>
-            <h4 className="font-editorial text-2xl text-white font-normal">
-              Pergeseran Selera Musik & Visual Lokal
+            <span className="text-[9px] tracking-[0.3em] uppercase text-[#AAAAAA] font-mono block">
+              CULTURAL SHIFT • MODERN NOSTALGIA
+            </span>
+            <h4 className="font-editorial text-2xl font-light text-white">
+              Pergeseran Selera Musik & Visual Nusantara
             </h4>
-            <p className="text-xs text-[#BFCCD9] max-w-2xl font-light leading-relaxed">
-              Sebagaimana karya Maliq & D'Essentials, Adikara, Bernadya, dan Wijaya 80 merajut kembali memori hangat masa lalu ke dalam nada modern, Memoedja menerjemahkan rasa nostalgia yang sama ke dalam lemari pakaian Anda.
+            <p className="text-xs text-[#CCCCCC] max-w-2xl font-light leading-relaxed">
+              Sebagaimana musisi lokal kontemporer merajut kembali rasa nostalgia menjadi karya modern, Memoedja menerjemahkan gelombang budaya ini ke dalam rancangan pakaian sehari-hari.
             </p>
           </div>
 
           <div className="flex-shrink-0">
             <a
               href="#savoir-faire"
-              className="inline-block bg-[#CBB597] hover:bg-[#B8A284] text-[#191716] text-[10px] tracking-[0.25em] uppercase font-bold py-3 px-6 transition-colors shadow-sm"
+              className="inline-block bg-white hover:bg-white/90 text-black text-[10px] tracking-[0.25em] uppercase font-normal py-3 px-6 transition-colors"
             >
               EXPLORE SAVOIR-FAIRE →
             </a>

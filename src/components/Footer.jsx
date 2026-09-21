@@ -2,61 +2,53 @@ import React from 'react';
 import { ArrowUp } from 'lucide-react';
 
 export default function Footer() {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   return (
-    <footer className="bg-[#121212] text-[#E8E2D8] pt-20 pb-12 px-6 border-t border-[#222]">
+    <footer className="bg-[#FFFFFF] text-[#000000] pt-16 pb-10 px-6 md:px-12 border-t border-[#EAEAEA]">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 pb-16 border-b border-[#2A2A2A]">
-          {/* Brand Manifesto Col */}
-          <div className="md:col-span-5 space-y-4">
-            <h2 className="font-editorial text-3xl md:text-4xl font-light tracking-[0.2em] text-white">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-[#EAEAEA]">
+          {/* Brand */}
+          <div className="md:col-span-4 space-y-3">
+            <h2 className="font-editorial text-2xl tracking-[0.25em] font-normal uppercase">
               MEMOEDJA
             </h2>
-            <p className="font-serif italic text-sm text-[#C4BCB3]">
+            <p className="font-serif italic text-sm text-[#555555]">
               "Honor confers a crown"
             </p>
-            <p className="text-xs text-[#8E867D] leading-relaxed max-w-sm font-light">
-              Contemporary Indonesian fashion & lifestyle brand reinterpreting Nusantara through modern design perspective and thoughtful garment construction.
+            <p className="text-[11px] text-[#777777] leading-relaxed max-w-xs font-light">
+              A contemporary Indonesian fashion & lifestyle brand reinterpreting Nusantara through modern design perspective.
             </p>
-            <div className="text-[10px] tracking-widest uppercase text-[#8C4A32] pt-2">
-              JAKARTA • EST. 2026
-            </div>
           </div>
 
-          {/* Quick Links */}
-          <div className="md:col-span-3 space-y-3 text-xs">
-            <span className="text-[10px] tracking-[0.25em] uppercase font-bold text-white block mb-4">
-              COLLECTIONS & SAVOIR-FAIRE
+          {/* Links */}
+          <div className="md:col-span-3 text-xs space-y-2.5">
+            <span className="text-[9.5px] tracking-[0.25em] uppercase font-semibold text-black block mb-3">
+              EXPLORE
             </span>
-            <ul className="space-y-2 text-[#AAA]">
-              <li><a href="#tarombo" className="hover:text-white transition-colors">Prologue 01: Tarombo</a></li>
-              <li><a href="#collection" className="hover:text-white transition-colors">Everyday Garments</a></li>
-              <li><a href="#savoir-faire" className="hover:text-white transition-colors">Atelier Construction</a></li>
-              <li><a href="#philosophy" className="hover:text-white transition-colors">Brand Pillars & Team</a></li>
+            <ul className="space-y-2 text-[#555555] font-light">
+              <li><a href="#boutique" className="hover:text-black transition-colors">Boutique</a></li>
+              <li><a href="#tarombo" className="hover:text-black transition-colors">Tarombo (Prologue)</a></li>
+              <li><a href="#philosophy" className="hover:text-black transition-colors">Philosophy & Team</a></li>
             </ul>
           </div>
 
-          {/* Newsletter Subscribe */}
-          <div className="md:col-span-4 space-y-3">
-            <span className="text-[10px] tracking-[0.25em] uppercase font-bold text-white block mb-2">
-              DISPATCH & PRIVATE PREVIEWS
+          {/* Newsletter */}
+          <div className="md:col-span-5 space-y-3">
+            <span className="text-[9.5px] tracking-[0.25em] uppercase font-semibold text-black block mb-2">
+              PRIVATE INVITATIONS
             </span>
-            <p className="text-xs text-[#8E867D] leading-relaxed">
-              Dapatkan notifikasi privat untuk rilis terbatas Drop 02 dan dokumentasi riset budaya Memoedja.
+            <p className="text-[11px] text-[#777777] leading-relaxed font-light">
+              Dapatkan akses pertama untuk rilis koleksi berikutnya.
             </p>
-            <form onSubmit={(e) => { e.preventDefault(); alert("Terima kasih telah bergabung dalam arsip privat Memoedja."); }} className="flex mt-3">
+            <form onSubmit={(e) => { e.preventDefault(); alert("Terima kasih."); }} className="flex mt-2">
               <input
                 type="email"
-                placeholder="Alamat email Anda..."
+                placeholder="Email Anda"
                 required
-                className="bg-[#1F1F1F] border border-[#333] text-xs text-white px-3 py-2.5 outline-none flex-1 focus:border-[#8C4A32] placeholder:text-[#666]"
+                className="bg-white border border-[#D0D0D0] text-xs text-black px-3 py-2.5 outline-none flex-1 focus:border-black placeholder:text-[#AAAAAA]"
               />
               <button
                 type="submit"
-                className="bg-[#8C4A32] hover:bg-[#A3563B] text-white text-[10px] tracking-wider uppercase font-semibold px-4 transition-colors"
+                className="bg-black text-white text-[9.5px] tracking-widest uppercase px-5 hover:bg-black/80 transition-colors"
               >
                 JOIN
               </button>
@@ -64,18 +56,15 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-[10px] text-[#6B635A] gap-4">
-          <div>
-            © {new Date().getFullYear()} MEMOEDJA. Built from Indonesian culture. Designed for the generation living now.
-          </div>
-
+        {/* Bottom */}
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-[9px] text-[#999999] gap-3">
+          <span>© {new Date().getFullYear()} MEMOEDJA. Jakarta.</span>
           <button
-            onClick={scrollToTop}
-            className="flex items-center gap-1.5 text-white hover:text-[#8C4A32] transition-colors"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="flex items-center gap-1.5 text-black hover:opacity-60 transition-opacity text-[10px] tracking-wider uppercase"
           >
-            <span>BACK TO TOP</span>
-            <ArrowUp size={12} />
+            <span>TOP</span>
+            <ArrowUp size={11} />
           </button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PRODUCTS } from '../data/products';
-import { Scissors, CheckCircle2, Eye, Sparkles } from 'lucide-react';
+import { CheckCircle2, Eye } from 'lucide-react';
 
 export default function GarmentExplorer({ onSelectProductForModal }) {
   const [selectedGarmentId, setSelectedGarmentId] = useState(PRODUCTS[0].id);
@@ -8,22 +8,22 @@ export default function GarmentExplorer({ onSelectProductForModal }) {
   const [activePointIndex, setActivePointIndex] = useState(0);
 
   return (
-    <section id="savoir-faire" className="py-28 px-6 bg-[#EFEAE1] border-b border-[#DDD5C7] paper-texture">
-      <div className="max-w-6xl mx-auto">
-        {/* Header Section */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="text-[10px] tracking-[0.4em] uppercase text-[#874229] font-mono block mb-3">
-            ATELIER ARCHIVE • SAVOIR-FAIRE
+    <section id="savoir-faire" className="py-28 px-6 md:px-12 bg-[#FFFFFF] border-b border-[#EFEFEF]">
+      <div className="max-w-7xl mx-auto">
+        {/* Section Header: Dior Savoir-Faire */}
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <span className="text-[9.5px] tracking-[0.35em] uppercase text-[#777777] font-sans block mb-3">
+            SAVOIR-FAIRE & ATELIER
           </span>
-          <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl font-light text-[#191716] tracking-tight mb-4">
-            Konstruksi Garmen & Rekayasa Serat
+          <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl font-light text-[#000000] tracking-tight mb-4">
+            Konstruksi Garmen
           </h2>
-          <p className="text-xs sm:text-sm text-[#6E645A] font-light max-w-xl mx-auto leading-relaxed">
-            Menolak kompromi cepat fast-fashion. Setiap helai pakaian Memoedja dirancang dengan konstruksi jahitan berkekuatan tinggi dan kejujuran material murni.
+          <p className="text-xs sm:text-sm text-[#555555] font-light max-w-lg mx-auto leading-relaxed">
+            Menolak kompromi cepat fast-fashion. Setiap helai pakaian Memoedja dirancang dengan ketelitian konstruksi jahitan dan kejujuran material murni.
           </p>
         </div>
 
-        {/* Archival Garment Selector Tabs (Aimé Leon Dore Catalog Tabs) */}
+        {/* Minimalist Garment Selector (Pure Dior Monochrome Tabs) */}
         <div className="flex items-center justify-start sm:justify-center overflow-x-auto gap-2 pb-3 mb-12 scrollbar-none">
           {PRODUCTS.map((item, idx) => {
             const isSelected = item.id === selectedGarmentId;
@@ -34,10 +34,10 @@ export default function GarmentExplorer({ onSelectProductForModal }) {
                   setSelectedGarmentId(item.id);
                   setActivePointIndex(0);
                 }}
-                className={`text-[10px] tracking-[0.2em] uppercase py-2.5 px-5 font-mono transition-all whitespace-nowrap border ${
+                className={`text-[10px] tracking-[0.2em] uppercase py-2.5 px-5 transition-all whitespace-nowrap border ${
                   isSelected
-                    ? "bg-[#191716] text-[#F7F4EE] border-[#191716] shadow-sm"
-                    : "bg-[#F7F4EE] text-[#5C534A] border-[#DDD5C7] hover:bg-[#EAE4D6]"
+                    ? "bg-black text-white border-black"
+                    : "bg-white text-black border-[#E0E0E0] hover:border-black"
                 }`}
               >
                 0{idx + 1} • {item.name.split(' ')[0]} {item.weight ? `(${item.weight})` : ''}
@@ -46,73 +46,73 @@ export default function GarmentExplorer({ onSelectProductForModal }) {
           })}
         </div>
 
-        {/* Garment Studio Worktable Card */}
-        <div className="bg-[#F7F4EE] border border-[#DDD5C7] p-6 sm:p-10 lg:p-12 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center shadow-sm">
-          {/* Left: Garment Archival Stills */}
+        {/* Savoir-Faire Worktable Card (Pure White with Crisp Hairlines) */}
+        <div className="bg-[#FFFFFF] border border-[#EAEAEA] p-6 sm:p-10 lg:p-12 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          {/* Left: Product Images */}
           <div className="lg:col-span-7 flex flex-col gap-4">
-            <div className="relative aspect-[4/3] overflow-hidden bg-[#D8CEBF] border border-[#DDD5C7]">
+            <div className="relative aspect-[4/3] overflow-hidden bg-[#F8F8F8] border border-[#EAEAEA]">
               <img
                 src={selectedProduct.primaryImage}
                 alt={selectedProduct.name}
-                className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-103"
+                className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-102"
               />
-              <div className="absolute top-3 left-3 bg-[#191716]/90 backdrop-blur-xs text-[#F7F4EE] px-3 py-1 text-[9px] font-mono tracking-widest uppercase">
+              <div className="absolute top-3 left-3 bg-black/85 text-white px-3 py-1 text-[8.5px] tracking-widest uppercase font-mono">
                 {selectedProduct.badge}
               </div>
-              <div className="absolute bottom-3 right-3 bg-[#F7F4EE]/90 backdrop-blur-xs text-[#191716] px-3 py-1 text-[9px] font-mono tracking-wider">
+              <div className="absolute bottom-3 right-3 bg-white/90 text-black px-3 py-1 text-[8.5px] tracking-wider uppercase font-mono border border-[#EAEAEA]">
                 {selectedProduct.color}
               </div>
             </div>
 
-            {/* Sub Perspectives */}
+            {/* Perspectives */}
             <div className="grid grid-cols-3 gap-3">
               {[selectedProduct.primaryImage, selectedProduct.secondaryImage, selectedProduct.detailImage].map((imgUrl, idx) => (
                 <div
                   key={idx}
-                  className="aspect-[4/3] bg-[#DDD5C7] overflow-hidden border border-[#DDD5C7] cursor-pointer hover:opacity-90 transition-opacity"
+                  className="aspect-[4/3] bg-[#F8F8F8] overflow-hidden border border-[#EAEAEA] cursor-pointer hover:opacity-80 transition-opacity"
                 >
-                  <img src={imgUrl} alt="Atelier detail" className="w-full h-full object-cover" />
+                  <img src={imgUrl} alt="Detail" className="w-full h-full object-cover" />
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Right: Technical Spec Sheet */}
+          {/* Right: Specs & Construction Discipline */}
           <div className="lg:col-span-5 flex flex-col justify-between h-full space-y-6">
             <div>
-              <div className="flex items-center gap-2 mb-2 font-mono text-[9.5px] tracking-[0.25em] text-[#874229] uppercase">
-                <span>SPEC SHEET</span>
+              <div className="flex items-center gap-2 mb-2 font-mono text-[9px] tracking-[0.25em] text-[#777777] uppercase">
+                <span>SPECIFICATION</span>
                 <span>/</span>
                 <span>{selectedProduct.category}</span>
                 <span>/</span>
                 <span>{selectedProduct.weight}</span>
               </div>
 
-              <h3 className="font-editorial text-2xl sm:text-3xl font-normal text-[#191716] leading-snug mb-3">
+              <h3 className="font-editorial text-2xl sm:text-3xl font-light text-[#000000] leading-snug mb-3">
                 {selectedProduct.name}
               </h3>
 
-              <p className="text-xs text-[#5C534A] leading-relaxed font-light mb-6">
+              <p className="text-xs text-[#555555] leading-relaxed font-light mb-6">
                 {selectedProduct.description}
               </p>
 
-              {/* Fabric Specs Box */}
-              <div className="p-4 bg-[#EFEAE1] border border-[#DDD5C7] mb-6">
-                <span className="text-[9px] tracking-[0.25em] uppercase text-[#7A7065] block font-mono mb-1">
-                  COMPOSITION & PROVENANCE
+              {/* Composition Box */}
+              <div className="p-4 bg-[#FAFAFA] border border-[#EAEAEA] mb-6">
+                <span className="text-[9px] tracking-[0.25em] uppercase text-[#777777] block font-mono mb-1">
+                  FABRIC COMPOSITION
                 </span>
-                <div className="text-xs font-medium text-[#191716]">
+                <div className="text-xs font-medium text-[#000000]">
                   {selectedProduct.fabric}
                 </div>
-                <div className="text-[11px] text-[#6E645A] mt-1 font-light">
-                  Siluet: <span className="font-medium text-[#191716]">{selectedProduct.silhouette}</span>
+                <div className="text-[11px] text-[#666666] mt-1 font-light">
+                  Siluet: <span className="font-medium text-[#000000]">{selectedProduct.silhouette}</span>
                 </div>
               </div>
 
-              {/* Construction Hotspots (Bode Monograph Style) */}
+              {/* Hotspots */}
               <div className="space-y-2.5">
-                <span className="text-[9.5px] tracking-[0.25em] uppercase text-[#191716] font-mono font-bold block mb-2">
-                  DISCIPLINE DETAILS:
+                <span className="text-[9.5px] tracking-[0.25em] uppercase text-[#000000] font-bold block mb-2 font-mono">
+                  CONSTRUCTION DETAILS:
                 </span>
                 {selectedProduct.constructionDetails.map((detail, index) => {
                   const isActive = activePointIndex === index;
@@ -122,19 +122,19 @@ export default function GarmentExplorer({ onSelectProductForModal }) {
                       onClick={() => setActivePointIndex(index)}
                       className={`p-3 border cursor-pointer transition-all ${
                         isActive
-                          ? "bg-[#EFEAE1] border-[#874229]"
-                          : "bg-[#F7F4EE] border-[#DDD5C7] hover:bg-[#EFEAE1]"
+                          ? "bg-[#FAFAFA] border-black"
+                          : "bg-[#FFFFFF] border-[#EAEAEA] hover:border-[#CCCCCC]"
                       }`}
                     >
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-semibold text-[#191716] flex items-center gap-2">
-                          <CheckCircle2 size={12} className={isActive ? "text-[#874229]" : "text-[#B8AEA0]"} />
+                        <span className="font-medium text-[#000000] flex items-center gap-2">
+                          <CheckCircle2 size={12} className={isActive ? "text-black" : "text-[#BBBBBB]"} />
                           {detail.title}
                         </span>
-                        <span className="font-mono text-[9px] text-[#874229]">0{index + 1}</span>
+                        <span className="font-mono text-[9px] text-[#777777]">0{index + 1}</span>
                       </div>
                       {isActive && (
-                        <p className="text-[11.5px] text-[#5C534A] mt-2 pl-5 leading-relaxed font-light animate-fade-in">
+                        <p className="text-[11.5px] text-[#555555] mt-2 pl-5 leading-relaxed font-light animate-fade-in">
                           {detail.desc}
                         </p>
                       )}
@@ -145,17 +145,17 @@ export default function GarmentExplorer({ onSelectProductForModal }) {
             </div>
 
             {/* Action Bar */}
-            <div className="pt-4 border-t border-[#DDD5C7] flex items-center justify-between gap-4">
+            <div className="pt-4 border-t border-[#EAEAEA] flex items-center justify-between gap-4">
               <div>
-                <span className="text-[9px] tracking-wider uppercase text-[#7A7065] font-mono block">RETAIL VALUE</span>
-                <span className="font-editorial text-2xl font-semibold text-[#191716]">
+                <span className="text-[9px] tracking-wider uppercase text-[#777777] font-mono block">PRICE</span>
+                <span className="font-editorial text-2xl font-semibold text-[#000000]">
                   {selectedProduct.priceFormatted}
                 </span>
               </div>
 
               <button
                 onClick={() => onSelectProductForModal(selectedProduct)}
-                className="inline-flex items-center gap-2 bg-[#191716] hover:bg-[#874229] text-[#F7F4EE] text-[10px] tracking-[0.25em] uppercase font-mono font-semibold py-3.5 px-6 transition-colors shadow-sm"
+                className="inline-flex items-center gap-2 bg-black hover:bg-black/80 text-white text-[10px] tracking-[0.25em] uppercase font-normal py-3.5 px-6 transition-colors"
               >
                 <Eye size={13} />
                 <span>INSPECT & ACQUIRE</span>

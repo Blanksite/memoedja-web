@@ -1,19 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PRODUCTS } from './data/products';
-import Navbar from './components/Navbar';
-import HeroCampaign from './components/HeroCampaign';
-import Manifesto from './components/Manifesto';
-import BoutiqueGallery from './components/BoutiqueGallery';
-// import BrandWorld from './components/BrandWorld';
-import Footer from './components/Footer';
+
+import NavbarV2 from './components/v2/NavbarV2';
+import MaisonHero from './components/v2/MaisonHero';
+import MaisonGallery from './components/v2/MaisonGallery';
+import MaisonFooter from './components/v2/MaisonFooter';
+
 import ProductDetailModal from './components/ProductDetailModal';
 import CartDrawer from './components/CartDrawer';
 import CheckoutModal from './components/CheckoutModal';
 import InventoryManager from './components/InventoryManager';
 import SearchModal from './components/SearchModal';
-import { useState } from 'react';
 
-export default function App() {
+export default function AppV2() {
   const [products, setProducts] = useState(PRODUCTS);
   const [cart, setCart] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -21,7 +20,7 @@ export default function App() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [currency, setCurrency] = useState("IDR");
+  const [currency, setCurrency] = useState('IDR');
 
   // Add to Bag
   const handleAddToCart = (product, size, quantity = 1) => {
@@ -54,7 +53,7 @@ export default function App() {
     );
   };
 
-  // Remove
+  // Remove Item
   const handleRemoveFromCart = (productId, size) => {
     setCart((prev) =>
       prev.filter((item) => !(item.product.id === productId && item.size === size))
@@ -97,28 +96,24 @@ export default function App() {
   const totalCartUnits = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="min-h-screen bg-[#FFFFFF] text-[#000000] flex flex-col font-sans">
-      <Navbar
+    <div className="min-h-screen bg-white text-black flex flex-col font-sans">
+      {/* Clean Navbar: Menu | Logo | Cart */}
+      <NavbarV2
         cartCount={totalCartUnits}
         onOpenCart={() => setIsCartOpen(true)}
-        onOpenInventory={() => setIsInventoryOpen(true)}
         onOpenSearch={() => setIsSearchOpen(true)}
-        currency={currency}
-        setCurrency={setCurrency}
       />
 
       <main className="flex-1">
-        {/* 1. Full-Bleed Campaign Visual */}
-        <HeroCampaign />
+        {/* 1. ReactBits ScrollExpand Hero */}
+        <MaisonHero />
 
-        {/* 2. Manifesto — One Poetic Statement */}
-        <Manifesto />
-
-        {/* 3. Boutique Gallery — Images + Art Interludes */}
-        <BoutiqueGallery onSelectProduct={(p) => setSelectedProduct(p)} />
+        {/* 2. Pure Visual Boutique Gallery (No text clutter, click to view details) */}
+        <MaisonGallery onSelectProduct={(p) => setSelectedProduct(p)} />
       </main>
 
-      <Footer />
+      {/* 3. Clean Minimal Footer */}
+      <MaisonFooter />
 
       {/* === Modals & Drawers === */}
       <ProductDetailModal
