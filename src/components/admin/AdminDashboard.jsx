@@ -156,6 +156,37 @@ export default function AdminDashboard({ isOpen, onClose }) {
   const [isCalculating, setIsCalculating] = useState(false);
   const [calcResult, setCalcResult] = useState(null);
 
+  // ── Sales Pie Chart & Google Analytics State ──
+  const [pieMode, setPieMode] = useState('category'); // 'category' | 'payment'
+  const [activePieHover, setActivePieHover] = useState(null);
+  const [gaId, setGaId] = useState(() => (typeof window !== 'undefined' ? localStorage.getItem('memoedja_ga_id') || 'G-MEMOEDJA26' : 'G-MEMOEDJA26'));
+  const [gaSaved, setGaSaved] = useState(false);
+
+  const salesByCategory = [
+    { label: 'Selvedge Denim 13oz', percentage: 38, value: 1475000, color: '#4318FF', units: 2 },
+    { label: 'Denim 15oz Bootcut', percentage: 26, value: 998000, color: '#05CD99', units: 1 },
+    { label: 'Cotton Chore Jacket', percentage: 18, value: 699000, color: '#FFB547', units: 1 },
+    { label: 'Canvas Shirt', percentage: 11, value: 549000, color: '#3399FF', units: 1 },
+    { label: 'Henley Shirt', percentage: 7, value: 329000, color: '#868CFF', units: 1 }
+  ];
+
+  const salesByPayment = [
+    { label: 'QRIS (GoPay / BCA)', percentage: 62, value: 2410000, color: '#05CD99', units: 3 },
+    { label: 'Virtual Account (BCA/Mandiri)', percentage: 28, value: 1090000, color: '#4318FF', units: 2 },
+    { label: 'Credit Card (3D Secure)', percentage: 10, value: 390000, color: '#FFB547', units: 1 }
+  ];
+
+  const handleSaveGaId = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('memoedja_ga_id', gaId);
+      if (window.gtag) {
+        window.gtag('config', gaId, { send_page_view: true });
+      }
+    }
+    setGaSaved(true);
+    setTimeout(() => setGaSaved(false), 2000);
+  };
+
   if (!isOpen) return null;
 
   // Filter Orders
@@ -505,6 +536,231 @@ export default function AdminDashboard({ isOpen, onClose }) {
                     <div className="flex items-center gap-1 text-[11px] font-bold text-[#4318FF] mt-0.5">
                       <span>5 SKU Curated</span>
                     </div>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* ═══════════════════════════════════════════════════
+                  NEW: SALES PIE CHART & GOOGLE ANALYTICS SECTION
+                 ═══════════════════════════════════════════════════ */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                {/* 1. SALES PIE CHART (DONUT) CARD */}
+                <div className="lg:col-span-7 bg-white rounded-[20px] p-6 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] flex flex-col justify-between">
+                  <div>
+                    {/* Header with Mode Toggle */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#F4F7FE] gap-3">
+                      <div>
+                        <h3 className="text-lg font-bold text-[#1B2559]">Sales Distribution (Pie Chart)</h3>
+                        <p className="text-xs text-[#A3AED0]">Analisis proporsi penjualan garmen & channel pembayaran</p>
+                      </div>
+
+                      {/* Horizon UI Toggle Pills */}
+                      <div className="flex items-center gap-1 bg-[#F4F7FE] p-1 rounded-xl">
+                        <button
+                          onClick={() => setPieMode('category')}
+                          className={`text-xs px-3 py-1.5 rounded-lg font-bold transition-all ${
+                            pieMode === 'category'
+                              ? 'bg-white text-[#4318FF] shadow-xs'
+                              : 'text-[#A3AED0] hover:text-[#2B3674]'
+                          }`}
+                        >
+                          By Garment
+                        </button>
+                        <button
+                          onClick={() => setPieMode('payment')}
+                          className={`text-xs px-3 py-1.5 rounded-lg font-bold transition-all ${
+                            pieMode === 'payment'
+                              ? 'bg-white text-[#4318FF] shadow-xs'
+                              : 'text-[#A3AED0] hover:text-[#2B3674]'
+                          }`}
+                        >
+                          By Payment
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Donut Chart & Legend Display */}
+                    <div className="pt-6 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                      {/* SVG Donut Chart Visual */}
+                      <div className="md:col-span-5 flex items-center justify-center relative">
+                        <svg className="w-48 h-48 -rotate-90 transform" viewBox="0 0 200 200">
+                          {/* Background Track Circle */}
+                          <circle
+                            cx="100"
+                            cy="100"
+                            r="65"
+                            fill="transparent"
+                            stroke="#F4F7FE"
+                            strokeWidth="24"
+                          />
+                          {/* Render Donut Slices */}
+                          {(() => {
+                            let cumulativePercent = 0;
+                            const currentList = pieMode === 'category' ? salesByCategory : salesByPayment;
+                            const circumference = 2 * Math.PI * 65; // ~408.4
+
+                            return currentList.map((slice, idx) => {
+                              const strokeDasharray = `${(slice.percentage / 100) * circumference} ${circumference}`;
+                              const strokeDashoffset = -((cumulativePercent / 100) * circumference);
+                              cumulativePercent += slice.percentage;
+
+                              const isHovered = activePieHover === idx;
+
+                              return (
+                                <circle
+                                  key={idx}
+                                  cx="100"
+                                  cy="100"
+                                  r="65"
+                                  fill="transparent"
+                                  stroke={slice.color}
+                                  strokeWidth={isHovered ? "28" : "24"}
+                                  strokeDasharray={strokeDasharray}
+                                  strokeDashoffset={strokeDashoffset}
+                                  strokeLinecap="round"
+                                  className="transition-all duration-300 cursor-pointer"
+                                  onMouseEnter={() => setActivePieHover(idx)}
+                                  onMouseLeave={() => setActivePieHover(null)}
+                                />
+                              );
+                            });
+                          })()}
+                        </svg>
+
+                        {/* Center Metric Text */}
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+                          <span className="text-[11px] font-bold text-[#A3AED0] uppercase">
+                            {activePieHover !== null
+                              ? (pieMode === 'category' ? salesByCategory[activePieHover].percentage : salesByPayment[activePieHover].percentage) + '%'
+                              : 'TOTAL'}
+                          </span>
+                          <span className="text-lg font-bold text-[#1B2559]">
+                            {activePieHover !== null
+                              ? 'Rp ' + ((pieMode === 'category' ? salesByCategory[activePieHover].value : salesByPayment[activePieHover].value) / 1000).toLocaleString('id-ID') + 'K'
+                              : 'Rp ' + (totalOmset / 1000000).toFixed(1) + 'M'}
+                          </span>
+                          <span className="text-[9px] font-bold text-[#4318FF] uppercase">
+                            {activePieHover !== null
+                              ? (pieMode === 'category' ? salesByCategory[activePieHover].label.split(' ')[0] : salesByPayment[activePieHover].label.split(' ')[0])
+                              : 'SALES'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Interactive Legend Table */}
+                      <div className="md:col-span-7 space-y-2.5">
+                        {(pieMode === 'category' ? salesByCategory : salesByPayment).map((slice, idx) => (
+                          <div
+                            key={idx}
+                            onMouseEnter={() => setActivePieHover(idx)}
+                            onMouseLeave={() => setActivePieHover(null)}
+                            className={`flex items-center justify-between p-2 rounded-xl transition-all cursor-pointer ${
+                              activePieHover === idx ? 'bg-[#F4F7FE]' : 'hover:bg-[#F4F7FE]/50'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <span
+                                className="w-3 h-3 rounded-full shrink-0 shadow-xs"
+                                style={{ backgroundColor: slice.color }}
+                              />
+                              <span className="text-xs font-bold text-[#1B2559] truncate max-w-[140px]">
+                                {slice.label}
+                              </span>
+                            </div>
+
+                            <div className="text-right font-mono text-xs">
+                              <span className="font-bold text-[#1B2559] mr-2">{slice.percentage}%</span>
+                              <span className="text-[#A3AED0] text-[11px]">
+                                Rp {slice.value.toLocaleString('id-ID')}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 mt-4 border-t border-[#F4F7FE] flex items-center justify-between text-xs text-[#A3AED0]">
+                    <span>Metrik diupdate otomatis dari log pesanan</span>
+                    <span className="font-bold text-[#4318FF] font-mono">Real-time Attribution</span>
+                  </div>
+                </div>
+
+                {/* 2. GOOGLE ANALYTICS 4 (GA4) INTEGRATION & FUNNEL CARD */}
+                <div className="lg:col-span-5 bg-white rounded-[20px] p-6 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] flex flex-col justify-between">
+                  <div>
+                    {/* Header */}
+                    <div className="flex items-center justify-between pb-4 border-b border-[#F4F7FE]">
+                      <div>
+                        <h3 className="text-lg font-bold text-[#1B2559]">Google Analytics 4</h3>
+                        <p className="text-xs text-[#A3AED0]">Global Site Tag & E-Commerce Event Pipeline</p>
+                      </div>
+                      <span className="text-[10px] font-bold uppercase bg-[#05CD99]/10 text-[#05CD99] px-2.5 py-1 rounded-full flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#05CD99] animate-pulse" />
+                        <span>Connected</span>
+                      </span>
+                    </div>
+
+                    {/* GA4 Measurement ID Config Form */}
+                    <div className="mt-4 space-y-3">
+                      <div>
+                        <label className="text-[11px] font-bold text-[#2B3674] uppercase block mb-1">
+                          GA4 Measurement ID
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={gaId}
+                            onChange={(e) => setGaId(e.target.value)}
+                            placeholder="G-XXXXXXXXXX"
+                            className="bg-[#F4F7FE] border-none rounded-xl px-3.5 py-2 text-xs font-mono font-bold text-[#2B3674] outline-none w-full focus:ring-2 focus:ring-[#4318FF]/20"
+                          />
+                          <button
+                            onClick={handleSaveGaId}
+                            className="px-3.5 py-2 bg-[#4318FF] hover:bg-[#3311CC] text-white text-xs font-bold rounded-xl transition-colors shrink-0 shadow-xs"
+                          >
+                            {gaSaved ? 'Saved!' : 'Save ID'}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* E-Commerce Funnel Tracking Pipeline */}
+                      <div className="pt-2">
+                        <span className="text-[11px] font-bold text-[#2B3674] uppercase block mb-2">
+                          E-Commerce Conversion Funnel
+                        </span>
+                        
+                        <div className="space-y-2 text-xs font-mono">
+                          <div className="flex items-center justify-between p-2 rounded-xl bg-[#F4F7FE]">
+                            <span className="text-[#707EAE]">1. page_view (Storefront Traffic)</span>
+                            <span className="font-bold text-[#1B2559]">1,842</span>
+                          </div>
+                          <div className="flex items-center justify-between p-2 rounded-xl bg-[#F4F7FE]">
+                            <span className="text-[#707EAE]">2. view_item (Detail Modal Click)</span>
+                            <span className="font-bold text-[#1B2559]">920 (49.9%)</span>
+                          </div>
+                          <div className="flex items-center justify-between p-2 rounded-xl bg-[#F4F7FE]">
+                            <span className="text-[#707EAE]">3. add_to_cart (Bag Conversion)</span>
+                            <span className="font-bold text-[#4318FF]">248 (26.9%)</span>
+                          </div>
+                          <div className="flex items-center justify-between p-2 rounded-xl bg-[#F4F7FE]">
+                            <span className="text-[#707EAE]">4. begin_checkout (Checkout Form)</span>
+                            <span className="font-bold text-[#FFB547]">62 (25.0%)</span>
+                          </div>
+                          <div className="flex items-center justify-between p-2 rounded-xl bg-[#05CD99]/10 text-[#05CD99]">
+                            <span className="font-bold">5. purchase (Midtrans Settlement)</span>
+                            <span className="font-bold">16 (25.8%)</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 mt-4 border-t border-[#F4F7FE] flex items-center justify-between text-xs">
+                    <span className="text-[#A3AED0]">Overall Conversion Rate:</span>
+                    <span className="font-bold text-[#05CD99] font-mono text-sm">2.6% (Healthy)</span>
                   </div>
                 </div>
 

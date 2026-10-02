@@ -11,6 +11,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Google Analytics (GA4) Global Site Tag -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PLACEHOLDER"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', localStorage.getItem('memoedja_ga_id') || 'G-XXXXXXXXXX', { send_page_view: true });
+    </script>
   </head>
   <body class="bg-[#FAF8F5] text-[#1A1A1A] antialiased selection:bg-[#1F2E3D] selection:text-white">
     <div id="root"></div>

@@ -11,7 +11,8 @@ import CartDrawer from './components/CartDrawer';
 import CheckoutModal from './components/CheckoutModal';
 import AdminDashboard from './components/admin/AdminDashboard';
 import SearchModal from './components/SearchModal';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { initGA, trackPageView, trackViewItem, trackAddToCart, trackBeginCheckout, trackPurchase } from './services/analytics';
 
 export default function App() {
   const [products, setProducts] = useState(PRODUCTS);
@@ -25,8 +26,14 @@ export default function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [currency, setCurrency] = useState("IDR");
 
+  useEffect(() => {
+    initGA();
+    trackPageView(window.location.pathname, 'MEMOEDJA — Contemporary Indonesian Fashion');
+  }, []);
+
   // Add to Bag
   const handleAddToCart = (product, size, quantity = 1) => {
+    trackAddToCart(product, size, quantity);
     setCart((prev) => {
       const idx = prev.findIndex(
         (item) => item.product.id === product.id && item.size === size
@@ -39,6 +46,21 @@ export default function App() {
       return [...prev, { product, size, quantity }];
     });
     setIsCartOpen(true);
+  };
+
+  // Product View
+  const handleSelectProduct = (product) => {
+    setSelectedProduct(product);
+    if (product) {
+      trackViewItem(product);
+    }
+  };
+
+  // Proceed to Checkout
+  const handleProceedToCheckout = () => {
+    const totalCartValue = cart.reduce((sum, it) => sum + (it.product.price * it.quantity), 0);
+    trackBeginCheckout(cart, totalCartValue);
+    setIsCheckoutOpen(true);
   };
 
   // Update Quantity
@@ -75,10 +97,12 @@ export default function App() {
   };
 
   // Order Success
-  const handleSuccessfulOrder = (orderedItems) => {
+  const handleSuccessfulOrder = (orderedItems, orderId) => {
+    const totalAmount = (orderedItems || []).reduce((sum, it) => sum + (it.product.price * it.quantity), 0);
+    trackPurchase(orderId || `ORD-${Date.now()}`, totalAmount, orderedItems || [], 0);
     setProducts((prev) => {
       const updated = [...prev];
-      orderedItems.forEach((it) => {
+      (orderedItems || []).forEach((it) => {
         const pIdx = updated.findIndex((p) => p.id === it.product.id);
         if (pIdx > -1) {
           const current = updated[pIdx].stockPerSize?.[it.size] || 0;
@@ -117,7 +141,7 @@ export default function App() {
         <Manifesto />
 
         {/* 3. Boutique Gallery — Images + Art Interludes */}
-        <BoutiqueGallery onSelectProduct={(p) => setSelectedProduct(p)} />
+        <BoutiqueGallery onSelectProduct={handleSelectProduct} />
       </main>
 
       <Footer />
@@ -136,7 +160,7 @@ export default function App() {
         items={cart}
         onUpdateQuantity={handleUpdateQuantity}
         onRemoveItem={handleRemoveFromCart}
-        onProceedToCheckout={() => setIsCheckoutOpen(true)}
+        onProceedToCheckout={handleProceedToCheckout}
       />
 
       <CheckoutModal
@@ -154,7 +178,7 @@ export default function App() {
       <SearchModal
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
-        onSelectProduct={(p) => setSelectedProduct(p)}
+        onSelectProduct={handleSelectProduct}
       />
     </div>
   );
