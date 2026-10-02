@@ -20,7 +20,12 @@ define('MIDTRANS_SERVER_KEY', 'SB-Mid-server-xxxxxxxxxxxxxxxxxxxxxxxx');
 define('MIDTRANS_CLIENT_KEY', 'SB-Mid-client-xxxxxxxxxxxxxxxxxxxxxxxx');
 define('MIDTRANS_IS_PRODUCTION', false); // true jika sudah go-live
 
-// 4. Pengaturan Keamanan CORS
+// 4. WhatsApp Concierge Gateway (Pilih 'fonnte', 'wablas', atau 'mock' untuk testing)
+define('WA_GATEWAY_PROVIDER', 'mock'); // 'fonnte' | 'wablas' | 'mock'
+define('WA_API_TOKEN', 'TOKEN_WHATSAPP_GATEWAY_ANDA');
+define('WA_WABLAS_DOMAIN', 'https://bdg.wablas.com'); // Opsional khusus Wablas
+
+// 5. Pengaturan Keamanan CORS
 $allowed_origins = [
     'https://memoedja.com',
     'https://www.memoedja.com',

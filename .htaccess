@@ -1,0 +1,26 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # 1. Allow direct execution of PHP files in /api/
+  RewriteRule ^api/ - [L]
+
+  # 2. If the request is for an existing file or directory, serve it directly
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # 3. All other requests go to index.html (React SPA routing)
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# Security: Block direct public access to sensitive files
+<FilesMatch "^\.env|config\.php$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# Enable Gzip / Brotli compression for fashion images & assets
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/plain text/html text/xml text/css application/xml application/xhtml+xml application/rss+xml application/javascript application/x-javascript application/json image/svg+xml
+</IfModule>

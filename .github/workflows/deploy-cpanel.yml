@@ -1,0 +1,51 @@
+name: Deploy to Shared Hosting (cPanel via FTP)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  build-and-deploy:
+    name: Build Vite & Sync to cPanel public_html
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+
+      - name: Build Production Frontend
+        run: npm run build
+
+      - name: Prepare Deployment Package
+        run: |
+          mkdir -p deploy-package
+          # Copy compiled Vite assets
+          cp -r dist/* deploy-package/
+          # Copy PHP Backend API
+          cp -r api deploy-package/
+          # Copy .htaccess for Apache routing
+          if [ -f "public/.htaccess" ]; then
+            cp public/.htaccess deploy-package/
+          elif [ -f ".htaccess" ]; then
+            cp .htaccess deploy-package/
+          fi
+
+      - name: Sync Files to cPanel via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.CPANEL_FTP_SERVER }}
+          username: ${{ secrets.CPANEL_FTP_USERNAME }}
+          password: ${{ secrets.CPANEL_FTP_PASSWORD }}
+          server-dir: public_html/
+          local-dir: ./deploy-package/
+          dangerous-clean-slate: false # Do not delete existing uploads or databases
