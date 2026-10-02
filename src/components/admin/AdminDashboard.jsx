@@ -4,21 +4,22 @@ import {
   Search, Sliders, ChevronRight, X, ExternalLink, RefreshCw, 
   Send, Shield, ArrowUpRight, BarChart3, AlertCircle, 
   CreditCard, Eye, Printer, Filter, ChevronDown, Check,
-  Layers, MapPin, Phone, Mail, FileText, ArrowLeft, Bell
+  Layers, MapPin, Phone, Mail, FileText, ArrowLeft, Bell,
+  TrendingUp, TrendingDown, ArrowDownRight, Sparkles, Moon, Sun
 } from 'lucide-react';
 import { PRODUCTS, PRODUCTION_STAGES } from '../../data/products';
 
-// Data Pengguna & Role Hak Akses
+// ── Horizon UI User Roles & Multi-User Accounts ──
 const USERS = [
   { 
     id: 1, 
     name: 'Ken Koesumo', 
     email: 'ken@memoedja.com', 
     role: 'SUPER_ADMIN', 
-    roleLabel: 'Super Admin / Owner',
-    title: 'Creative Director',
+    roleLabel: 'Super Admin',
+    title: 'Creative Director / Owner',
     avatar: 'KK',
-    color: 'from-purple-600 to-indigo-600'
+    bgBadge: 'bg-[#4318FF]/10 text-[#4318FF]'
   },
   { 
     id: 2, 
@@ -28,7 +29,7 @@ const USERS = [
     roleLabel: 'Finance (CFO)',
     title: 'Chief Financial Officer',
     avatar: 'AR',
-    color: 'from-emerald-600 to-teal-600'
+    bgBadge: 'bg-[#05CD99]/10 text-[#05CD99]'
   },
   { 
     id: 3, 
@@ -38,7 +39,7 @@ const USERS = [
     roleLabel: 'Operations (COO)',
     title: 'Chief Operating Officer',
     avatar: 'GV',
-    color: 'from-blue-600 to-cyan-600'
+    bgBadge: 'bg-[#3399FF]/10 text-[#3399FF]'
   },
   { 
     id: 4, 
@@ -48,11 +49,11 @@ const USERS = [
     roleLabel: 'Atelier Staff',
     title: 'Lead Garment Designer',
     avatar: 'FM',
-    color: 'from-amber-600 to-rose-600'
+    bgBadge: 'bg-[#FFB547]/10 text-[#FFB547]'
   }
 ];
 
-// Mock Data Pesanan Lengkap
+// ── Orders Mock Data ──
 const INITIAL_ORDERS = [
   {
     id: 'MMDJ-20261001-9821A',
@@ -139,7 +140,7 @@ const INITIAL_ORDERS = [
 ];
 
 export default function AdminDashboard({ isOpen, onClose }) {
-  const [currentUser, setCurrentUser] = useState(USERS[0]); // Ken Koesumo (Super Admin)
+  const [currentUser, setCurrentUser] = useState(USERS[0]); // Default Ken Koesumo (Super Admin)
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'orders' | 'logistics' | 'inventory' | 'finance' | 'users' | 'docs'
   const [orders, setOrders] = useState(INITIAL_ORDERS);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -149,7 +150,7 @@ export default function AdminDashboard({ isOpen, onClose }) {
   const [waybillInput, setWaybillInput] = useState('');
   const [notifyWa, setNotifyWa] = useState(true);
 
-  // Quick Biteship Rate Calculator Widget State
+  // Biteship Live Calculator Widget State
   const [calcDest, setCalcDest] = useState('Bandung');
   const [calcWeight, setCalcWeight] = useState(1);
   const [isCalculating, setIsCalculating] = useState(false);
@@ -160,13 +161,11 @@ export default function AdminDashboard({ isOpen, onClose }) {
   // Filter Orders
   const filteredOrders = useMemo(() => {
     return orders.filter((o) => {
-      // Filter by Tab
       if (orderFilter === 'PAID' && (o.payment_status !== 'PAID' || o.fulfillment_status === 'SHIPPED' || o.fulfillment_status === 'DELIVERED')) return false;
       if (orderFilter === 'SHIPPED' && o.fulfillment_status !== 'SHIPPED') return false;
       if (orderFilter === 'PENDING' && o.payment_status !== 'PENDING') return false;
       if (orderFilter === 'DELIVERED' && o.fulfillment_status !== 'DELIVERED') return false;
 
-      // Filter by Search Query
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchId = o.id.toLowerCase().includes(q);
@@ -190,12 +189,11 @@ export default function AdminDashboard({ isOpen, onClose }) {
   const pendingCount = orders.filter((o) => o.payment_status === 'PENDING').length;
   const needShippingCount = orders.filter((o) => o.payment_status === 'PAID' && !o.waybill_number).length;
 
-  // Total Garment Units in Stock
   const totalUnits = useMemo(() => {
     return stockState.reduce((sum, p) => sum + Object.values(p.stockPerSize).reduce((a, b) => a + b, 0), 0);
   }, [stockState]);
 
-  // Handler: Update Stock
+  // Handler: Stock Delta
   const handleStockDelta = (productId, size, delta) => {
     setStockState((prev) =>
       prev.map((p) => {
@@ -258,603 +256,531 @@ export default function AdminDashboard({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#0C0D12] text-neutral-100 flex flex-col font-sans overflow-hidden animate-fade-in">
+    <div className="fixed inset-0 z-50 bg-[#F4F7FE] text-[#2B3674] flex font-sans overflow-hidden animate-fade-in">
       
-      {/* ── TOP HEADER BAR ── */}
-      <header className="h-16 bg-[#12131A] border-b border-neutral-800/80 px-6 flex items-center justify-between shrink-0">
-        {/* Brand & Workspace Name */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={onClose}
-            className="flex items-center gap-2 text-xs font-mono text-neutral-400 hover:text-white px-3 py-1.5 rounded bg-neutral-800/60 hover:bg-neutral-800 transition-colors border border-neutral-700/60"
-            title="Kembali ke Halaman Butik Depan"
-          >
-            <ArrowLeft size={14} />
-            <span>STOREFRONT</span>
-          </button>
-
-          <div className="h-4 w-px bg-neutral-800" />
-
-          <div className="flex items-center gap-2.5">
-            <span className="font-serif text-lg tracking-[0.25em] font-normal uppercase text-white">
-              MEMOEDJA
-            </span>
-            <span className="text-[10px] font-mono tracking-widest uppercase bg-neutral-800/80 text-neutral-300 px-2 py-0.5 rounded border border-neutral-700/60 font-semibold">
-              OPS COMMAND
-            </span>
-          </div>
-        </div>
-
-        {/* Global Live Search Bar */}
-        <div className="hidden md:flex items-center gap-2 bg-[#1A1B24] border border-neutral-800 rounded-lg px-3 py-1.5 w-72 text-xs focus-within:border-neutral-600 transition-colors">
-          <Search size={14} className="text-neutral-500 shrink-0" />
-          <input
-            type="text"
-            placeholder="Cari order, nama pembeli, no HP..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-transparent text-neutral-200 placeholder:text-neutral-500 outline-none w-full text-xs"
-          />
-          {searchQuery && (
-            <button onClick={() => setSearchQuery('')} className="text-neutral-500 hover:text-white">
-              <X size={12} />
-            </button>
-          )}
-        </div>
-
-        {/* Top Right: Studio Clock, Notifications & User Role Switcher */}
-        <div className="flex items-center gap-4">
-          <div className="hidden lg:flex flex-col text-right font-mono text-[10px] text-neutral-400">
-            <span className="text-white font-semibold">JAKARTA ATELIER</span>
-            <span>WIB (UTC+7) • ONLINE</span>
-          </div>
-
-          <div className="h-6 w-px bg-neutral-800 hidden lg:block" />
-
-          {/* User Role Switcher */}
-          <div className="flex items-center gap-2 bg-[#1A1B24] border border-neutral-800 p-1 rounded-lg">
-            <div className={`w-7 h-7 rounded-md bg-gradient-to-br ${currentUser.color} flex items-center justify-center font-mono text-xs font-bold text-white shadow-xs`}>
-              {currentUser.avatar}
-            </div>
-            <div className="flex flex-col pr-1">
-              <select
-                value={currentUser.id}
-                onChange={(e) => {
-                  const u = USERS.find((x) => x.id === parseInt(e.target.value));
-                  if (u) setCurrentUser(u);
-                }}
-                className="bg-transparent text-white text-xs font-medium outline-none cursor-pointer pr-1"
-              >
-                {USERS.map((u) => (
-                  <option key={u.id} value={u.id} className="bg-[#1A1B24] text-white">
-                    {u.name} ({u.roleLabel})
-                  </option>
-                ))}
-              </select>
-              <span className="text-[9px] font-mono text-neutral-400 -mt-0.5">
-                {currentUser.title}
-              </span>
-            </div>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-lg transition-colors"
-            title="Tutup Dashboard"
-          >
-            <X size={18} />
-          </button>
-        </div>
-      </header>
-
-      {/* ── MAIN DASHBOARD VIEW (SIDEBAR + WORKSPACE) ── */}
-      <div className="flex-1 flex overflow-hidden">
-        
-        {/* SIDEBAR NAVIGATION */}
-        <aside className="w-60 bg-[#12131A] border-r border-neutral-800/80 p-4 flex flex-col justify-between shrink-0">
-          <div className="space-y-6">
+      {/* ═══════════════════════════════════════════════════════════
+          HORIZON UI SIGNATURE SIDEBAR (White, Rounded, Clean)
+         ═══════════════════════════════════════════════════════════ */}
+      <aside className="w-72 bg-white m-4 mr-0 rounded-[24px] shadow-[0px_18px_40px_rgba(112,144,176,0.08)] flex flex-col justify-between p-6 shrink-0 z-20">
+        <div>
+          {/* Brand Logo & Studio Mark */}
+          <div className="pb-8 pt-2 px-2 border-b border-[#F4F7FE] flex items-center justify-between">
             <div>
-              <span className="text-[10px] font-mono tracking-[0.25em] text-neutral-500 uppercase px-3 block mb-2 font-semibold">
-                OPERATIONAL MENU
+              <h1 className="font-serif text-xl tracking-[0.25em] font-bold text-[#1B2559] uppercase">
+                MEMOEDJA
+              </h1>
+              <span className="text-[10px] font-sans font-semibold tracking-wider text-[#A3AED0] uppercase block">
+                HORIZON OPS MATRIX
               </span>
-              <nav className="space-y-1">
-                <button
-                  onClick={() => setActiveTab('overview')}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${
-                    activeTab === 'overview'
-                      ? 'bg-white text-black font-semibold shadow-xs'
-                      : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
-                  }`}
-                >
-                  <BarChart3 size={16} />
-                  <span>Overview & Metrics</span>
-                </button>
+            </div>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#05CD99] animate-pulse" title="System Live" />
+          </div>
 
+          {/* Nav Items */}
+          <nav className="mt-6 space-y-1.5">
+            {[
+              { id: 'overview', label: 'Main Dashboard', icon: BarChart3 },
+              { id: 'orders', label: 'Orders & Fulfillment', icon: Package, badge: needShippingCount > 0 ? needShippingCount : null },
+              { id: 'logistics', label: 'Biteship Logistics', icon: Truck },
+              { id: 'inventory', label: 'Stock & Atelier Matrix', icon: Layers },
+              { id: 'finance', label: 'Midtrans Finance', icon: CreditCard, roleRestricted: ['SUPER_ADMIN', 'FINANCE'] },
+              { id: 'users', label: 'Team Roles (RBAC)', icon: Users, roleRestricted: ['SUPER_ADMIN'] },
+              { id: 'docs', label: 'System Documentation', icon: FileText }
+            ].map((tab) => {
+              if (tab.roleRestricted && !tab.roleRestricted.includes(currentUser.role)) {
+                return null;
+              }
+              const isActive = activeTab === tab.id;
+              const Icon = tab.icon;
+
+              return (
                 <button
-                  onClick={() => setActiveTab('orders')}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${
-                    activeTab === 'orders'
-                      ? 'bg-white text-black font-semibold shadow-xs'
-                      : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full flex items-center justify-between px-4 py-3.5 rounded-[16px] text-sm font-semibold transition-all relative ${
+                    isActive
+                      ? 'bg-[#4318FF] text-white shadow-[0px_10px_20px_rgba(67,24,255,0.24)]'
+                      : 'text-[#A3AED0] hover:text-[#2B3674] hover:bg-[#F4F7FE]'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <Package size={16} />
-                    <span>Orders & Fulfillment</span>
+                  <div className="flex items-center gap-3.5">
+                    <Icon size={18} className={isActive ? 'text-white' : 'text-[#A3AED0]'} />
+                    <span>{tab.label}</span>
                   </div>
-                  {needShippingCount > 0 && (
-                    <span className="bg-amber-500 text-black font-mono text-[10px] px-1.5 py-0.2 rounded-full font-bold">
-                      {needShippingCount}
+
+                  {tab.badge && (
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                      isActive ? 'bg-white text-[#4318FF]' : 'bg-[#FFB547] text-white'
+                    }`}>
+                      {tab.badge}
                     </span>
                   )}
                 </button>
+              );
+            })}
+          </nav>
+        </div>
 
-                <button
-                  onClick={() => setActiveTab('logistics')}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${
-                    activeTab === 'logistics'
-                      ? 'bg-white text-black font-semibold shadow-xs'
-                      : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
-                  }`}
-                >
-                  <Truck size={16} />
-                  <span>Biteship Logistics Hub</span>
-                </button>
+        {/* Bottom Horizon UI Floating Card */}
+        <div className="bg-gradient-to-br from-[#868CFF] to-[#4318FF] rounded-[20px] p-5 text-white shadow-[0px_18px_40px_rgba(67,24,255,0.28)] relative overflow-hidden">
+          <div className="absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-white/10 blur-xs" />
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-[10px] font-mono tracking-wider font-bold uppercase bg-white/20 px-2 py-0.5 rounded-full">
+              LIVE ATELIER
+            </span>
+          </div>
+          <h4 className="font-bold text-sm leading-tight">Tarombo Drop 01</h4>
+          <p className="text-[11px] text-white/80 mt-1 leading-snug">
+            All services connected to Midtrans & Biteship Sandbox.
+          </p>
+          <button
+            onClick={onClose}
+            className="mt-3.5 w-full py-2 bg-white text-[#4318FF] font-bold text-xs rounded-xl shadow-xs hover:bg-neutral-100 transition-colors flex items-center justify-center gap-1.5"
+          >
+            <ArrowLeft size={13} />
+            <span>Storefront View</span>
+          </button>
+        </div>
+      </aside>
 
-                <button
-                  onClick={() => setActiveTab('inventory')}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${
-                    activeTab === 'inventory'
-                      ? 'bg-white text-black font-semibold shadow-xs'
-                      : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
-                  }`}
-                >
-                  <Layers size={16} />
-                  <span>Stock & Atelier Matrix</span>
-                </button>
-
-                {/* Tab Khusus Finance & Super Admin */}
-                {(currentUser.role === 'SUPER_ADMIN' || currentUser.role === 'FINANCE') && (
-                  <button
-                    onClick={() => setActiveTab('finance')}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${
-                      activeTab === 'finance'
-                        ? 'bg-white text-black font-semibold shadow-xs'
-                        : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
-                    }`}
-                  >
-                    <CreditCard size={16} />
-                    <span>Midtrans Reconciliation</span>
-                  </button>
-                )}
-
-                {/* Tab Khusus Super Admin */}
-                {currentUser.role === 'SUPER_ADMIN' && (
-                  <button
-                    onClick={() => setActiveTab('users')}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${
-                      activeTab === 'users'
-                        ? 'bg-white text-black font-semibold shadow-xs'
-                        : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
-                    }`}
-                  >
-                    <Users size={16} />
-                    <span>Team Permissions (RBAC)</span>
-                  </button>
-                )}
-              </nav>
+      {/* ═══════════════════════════════════════════════════════════
+          HORIZON UI MAIN CONTENT & FLOATING NAVBAR
+         ═══════════════════════════════════════════════════════════ */}
+      <div className="flex-1 flex flex-col overflow-hidden p-4">
+        
+        {/* Floating Horizon Topbar */}
+        <header className="h-20 bg-white/80 backdrop-blur-md rounded-[20px] px-6 flex items-center justify-between shadow-[0px_18px_40px_rgba(112,144,176,0.08)] shrink-0 z-10 mb-5">
+          {/* Breadcrumbs */}
+          <div>
+            <div className="text-xs font-semibold text-[#707EAE]">
+              <span>Pages</span> / <span className="capitalize">{activeTab}</span>
             </div>
-
-            <div>
-              <span className="text-[10px] font-mono tracking-[0.25em] text-neutral-500 uppercase px-3 block mb-2 font-semibold">
-                SYSTEM & DOCS
-              </span>
-              <nav className="space-y-1">
-                <button
-                  onClick={() => setActiveTab('docs')}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${
-                    activeTab === 'docs'
-                      ? 'bg-white text-black font-semibold shadow-xs'
-                      : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
-                  }`}
-                >
-                  <FileText size={16} />
-                  <span>Interactive Guide & Docs</span>
-                </button>
-              </nav>
-            </div>
+            <h2 className="text-xl font-bold text-[#1B2559] capitalize">
+              {activeTab === 'overview' ? 'Main Dashboard' : activeTab}
+            </h2>
           </div>
 
-          {/* Quick System Badge */}
-          <div className="p-3 bg-[#1A1B24] rounded-lg border border-neutral-800 text-[11px] font-mono space-y-1.5">
-            <div className="flex items-center justify-between text-neutral-400">
-              <span>BITESHIP API:</span>
-              <span className="text-emerald-400 font-bold">READY</span>
+          {/* Right Controls: Search, Notification, & Multi-Role Profile */}
+          <div className="flex items-center gap-3 bg-[#F4F7FE] p-2 rounded-[30px]">
+            {/* Search Input */}
+            <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-[30px] w-56 text-xs text-[#2B3674] shadow-xs">
+              <Search size={14} className="text-[#A3AED0]" />
+              <input
+                type="text"
+                placeholder="Search orders..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-transparent outline-none w-full text-xs text-[#2B3674] placeholder:text-[#A3AED0]"
+              />
+              {searchQuery && (
+                <button onClick={() => setSearchQuery('')} className="text-[#A3AED0] hover:text-[#2B3674]">
+                  <X size={12} />
+                </button>
+              )}
             </div>
-            <div className="flex items-center justify-between text-neutral-400">
-              <span>MIDTRANS:</span>
-              <span className="text-emerald-400 font-bold">SANDBOX</span>
-            </div>
-            <div className="flex items-center justify-between text-neutral-400">
-              <span>SECURITY:</span>
-              <span className="text-purple-400 font-bold">SHA-512</span>
-            </div>
-          </div>
-        </aside>
 
-        {/* WORKSPACE CONTENT AREA */}
-        <main className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 bg-[#0C0D12]">
-          
-          {/* ══════════════════════════════════════════════════
-              TAB 1: OVERVIEW & EXECUTIVE METRICS
-             ══════════════════════════════════════════════════ */}
+            {/* Notification Bell */}
+            <div className="relative p-2 text-[#A3AED0] hover:text-[#2B3674] cursor-pointer">
+              <Bell size={18} />
+              {needShippingCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#EE5D50]" />
+              )}
+            </div>
+
+            {/* Multi-Role Switcher Dropdown */}
+            <div className="flex items-center gap-2 bg-white pl-2 pr-3 py-1.5 rounded-[30px] shadow-xs">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#868CFF] to-[#4318FF] text-white flex items-center justify-center font-bold text-xs">
+                {currentUser.avatar}
+              </div>
+              <div className="flex flex-col">
+                <select
+                  value={currentUser.id}
+                  onChange={(e) => {
+                    const u = USERS.find((x) => x.id === parseInt(e.target.value));
+                    if (u) setCurrentUser(u);
+                  }}
+                  className="bg-transparent text-xs font-bold text-[#2B3674] outline-none cursor-pointer pr-1"
+                >
+                  {USERS.map((u) => (
+                    <option key={u.id} value={u.id} className="text-[#2B3674]">
+                      {u.name} ({u.roleLabel})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-full bg-white text-[#A3AED0] hover:text-[#EE5D50] hover:bg-red-50 flex items-center justify-center shadow-xs transition-colors"
+              title="Close to Storefront"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </header>
+
+        {/* Scrollable Workspace */}
+        <main className="flex-1 overflow-y-auto space-y-6 pr-1 pb-4">
+
+          {/* ═══════════════════════════════════════════════════
+              TAB 1: HORIZON UI MAIN METRICS DASHBOARD
+             ═══════════════════════════════════════════════════ */}
           {activeTab === 'overview' && (
-            <div className="space-y-8 animate-fade-in">
-              {/* Welcome Banner */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-800/80">
-                <div>
-                  <h2 className="text-2xl font-serif font-light text-white">
-                    Atelier Overview & Pulse
-                  </h2>
-                  <p className="text-xs text-neutral-400 mt-1">
-                    Halo, <strong className="text-white">{currentUser.name}</strong>. Hak akses aktif: <span className="font-mono text-neutral-300 font-semibold">{currentUser.roleLabel}</span>.
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-[11px] font-mono text-neutral-400 bg-[#161722] px-3 py-1.5 rounded-lg border border-neutral-800">
-                    TAROMBO DROP 01 — RUNNING
-                  </span>
-                </div>
-              </div>
-
-              {/* 4 Hero Metric Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Metric 1 */}
-                <div className="bg-[#14151E] border border-neutral-800/80 p-5 rounded-xl space-y-3 relative overflow-hidden group hover:border-neutral-700 transition-all">
-                  <div className="flex items-center justify-between text-neutral-400 text-xs font-mono">
-                    <span>GROSS REVENUE</span>
-                    <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
-                      <DollarSign size={14} />
-                    </div>
+            <div className="space-y-6 animate-fade-in">
+              {/* 4 Horizon UI Iconic Metric Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                
+                {/* Metric 1: Revenue */}
+                <div className="bg-white rounded-[20px] p-5 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] flex items-center gap-4 hover:shadow-[0px_18px_40px_rgba(112,144,176,0.16)] transition-all">
+                  <div className="w-14 h-14 rounded-full bg-[#F4F7FE] text-[#4318FF] flex items-center justify-center shrink-0">
+                    <DollarSign size={24} />
                   </div>
-                  <div className="text-2xl font-serif text-white font-medium">
-                    Rp {totalOmset.toLocaleString('id-ID')}
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] text-neutral-400 font-mono">
-                    <span className="text-emerald-400 flex items-center gap-0.5">
-                      <ArrowUpRight size={12} /> +24.8%
+                  <div>
+                    <span className="text-[#A3AED0] text-xs font-medium uppercase tracking-wide">
+                      Gross Revenue
                     </span>
-                    <span>{totalPaidOrders} Pesanan Lunas</span>
+                    <div className="text-[#1B2559] text-2xl font-bold tracking-tight">
+                      Rp {totalOmset.toLocaleString('id-ID')}
+                    </div>
+                    <div className="flex items-center gap-1 text-[11px] font-bold text-[#05CD99] mt-0.5">
+                      <ArrowUpRight size={13} />
+                      <span>+24.5%</span>
+                      <span className="text-[#A3AED0] font-normal ml-0.5">since last month</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Metric 2 */}
-                <div className="bg-[#14151E] border border-neutral-800/80 p-5 rounded-xl space-y-3 relative overflow-hidden group hover:border-neutral-700 transition-all">
-                  <div className="flex items-center justify-between text-neutral-400 text-xs font-mono">
-                    <span>PERLU DISIAPKAN</span>
-                    <div className="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
-                      <Package size={14} />
+                {/* Metric 2: Pending Shipping */}
+                <div className="bg-white rounded-[20px] p-5 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] flex items-center gap-4 hover:shadow-[0px_18px_40px_rgba(112,144,176,0.16)] transition-all">
+                  <div className="w-14 h-14 rounded-full bg-[#FFF7EC] text-[#FFB547] flex items-center justify-center shrink-0">
+                    <Package size={24} />
+                  </div>
+                  <div>
+                    <span className="text-[#A3AED0] text-xs font-medium uppercase tracking-wide">
+                      Need Dispatch
+                    </span>
+                    <div className="text-[#1B2559] text-2xl font-bold tracking-tight">
+                      {needShippingCount} Orders
                     </div>
-                  </div>
-                  <div className="text-2xl font-serif text-amber-400 font-medium">
-                    {needShippingCount} Paket
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] text-neutral-400 font-mono">
-                    <span>Menunggu Resi Biteship</span>
-                    <span className="text-amber-400 font-bold">Action Needed</span>
+                    <div className="flex items-center gap-1 text-[11px] font-bold text-[#FFB547] mt-0.5">
+                      <Clock size={12} />
+                      <span>Biteship Pickup Ready</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Metric 3 */}
-                <div className="bg-[#14151E] border border-neutral-800/80 p-5 rounded-xl space-y-3 relative overflow-hidden group hover:border-neutral-700 transition-all">
-                  <div className="flex items-center justify-between text-neutral-400 text-xs font-mono">
-                    <span>AVERAGE ORDER VALUE</span>
-                    <div className="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
-                      <BarChart3 size={14} />
+                {/* Metric 3: AOV */}
+                <div className="bg-white rounded-[20px] p-5 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] flex items-center gap-4 hover:shadow-[0px_18px_40px_rgba(112,144,176,0.16)] transition-all">
+                  <div className="w-14 h-14 rounded-full bg-[#EBF3FF] text-[#3399FF] flex items-center justify-center shrink-0">
+                    <BarChart3 size={24} />
+                  </div>
+                  <div>
+                    <span className="text-[#A3AED0] text-xs font-medium uppercase tracking-wide">
+                      Avg Order Value
+                    </span>
+                    <div className="text-[#1B2559] text-2xl font-bold tracking-tight">
+                      Rp {aov.toLocaleString('id-ID')}
                     </div>
-                  </div>
-                  <div className="text-2xl font-serif text-white font-medium">
-                    Rp {aov.toLocaleString('id-ID')}
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] text-neutral-400 font-mono">
-                    <span className="text-blue-400">Target Deck: Rp 650K</span>
-                    <span className="text-emerald-400 font-bold">Passed</span>
+                    <div className="flex items-center gap-1 text-[11px] font-bold text-[#05CD99] mt-0.5">
+                      <CheckCircle size={12} />
+                      <span>Target Rp 650K Achieved</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Metric 4 */}
-                <div className="bg-[#14151E] border border-neutral-800/80 p-5 rounded-xl space-y-3 relative overflow-hidden group hover:border-neutral-700 transition-all">
-                  <div className="flex items-center justify-between text-neutral-400 text-xs font-mono">
-                    <span>TOTAL STOK GARMEN</span>
-                    <div className="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
-                      <Layers size={14} />
+                {/* Metric 4: Total Stock */}
+                <div className="bg-white rounded-[20px] p-5 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] flex items-center gap-4 hover:shadow-[0px_18px_40px_rgba(112,144,176,0.16)] transition-all">
+                  <div className="w-14 h-14 rounded-full bg-[#F3E8FF] text-[#868CFF] flex items-center justify-center shrink-0">
+                    <Layers size={24} />
+                  </div>
+                  <div>
+                    <span className="text-[#A3AED0] text-xs font-medium uppercase tracking-wide">
+                      Garment Inventory
+                    </span>
+                    <div className="text-[#1B2559] text-2xl font-bold tracking-tight">
+                      {totalUnits} Units
+                    </div>
+                    <div className="flex items-center gap-1 text-[11px] font-bold text-[#4318FF] mt-0.5">
+                      <span>5 SKU Curated</span>
                     </div>
                   </div>
-                  <div className="text-2xl font-serif text-white font-medium">
-                    {totalUnits} Pcs
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] text-neutral-400 font-mono">
-                    <span>5 SKU Heritage</span>
-                    <span className="text-purple-400 font-bold">Healthy</span>
-                  </div>
                 </div>
+
               </div>
 
-              {/* Dual Panel: Recent Orders & Quick Biteship Widget */}
+              {/* Middle Section: Recent Orders Table + Biteship Quick Rate Checker */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* Recent Orders Stream */}
-                <div className="lg:col-span-7 bg-[#14151E] border border-neutral-800/80 rounded-xl p-6 space-y-4">
-                  <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
-                    <h3 className="font-serif text-lg font-light text-white">
-                      Pesanan Masuk Terbaru
-                    </h3>
+                
+                {/* Recent Orders Card */}
+                <div className="lg:col-span-8 bg-white rounded-[20px] p-6 shadow-[0px_18px_40px_rgba(112,144,176,0.08)]">
+                  <div className="flex items-center justify-between pb-5 border-b border-[#F4F7FE]">
+                    <div>
+                      <h3 className="text-lg font-bold text-[#1B2559]">Recent Orders</h3>
+                      <p className="text-xs text-[#A3AED0]">Real-time transactional feed from Midtrans</p>
+                    </div>
                     <button
                       onClick={() => setActiveTab('orders')}
-                      className="text-xs font-mono text-neutral-400 hover:text-white flex items-center gap-1"
+                      className="text-xs font-bold text-[#4318FF] hover:underline flex items-center gap-1 bg-[#F4F7FE] px-3 py-1.5 rounded-xl"
                     >
-                      <span>Lihat Semua ({orders.length})</span>
-                      <ChevronRight size={12} />
+                      <span>View All ({orders.length})</span>
+                      <ChevronRight size={14} />
                     </button>
                   </div>
 
-                  <div className="divide-y divide-neutral-800/60">
-                    {orders.slice(0, 3).map((ord) => (
-                      <div key={ord.id} className="py-3.5 flex items-center justify-between gap-4">
-                        <div className="space-y-0.5">
-                          <div className="flex items-center gap-2">
-                            <span className="font-mono text-xs font-bold text-white">{ord.id}</span>
-                            <span className={`text-[9px] font-mono px-2 py-0.2 rounded font-semibold ${
-                              ord.payment_status === 'PAID' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'
-                            }`}>
-                              {ord.payment_status}
-                            </span>
+                  <div className="divide-y divide-[#F4F7FE] mt-2">
+                    {orders.slice(0, 4).map((ord) => (
+                      <div key={ord.id} className="py-4 flex items-center justify-between hover:bg-[#F4F7FE]/50 px-2 rounded-xl transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-[#F4F7FE] flex items-center justify-center font-bold text-xs text-[#4318FF]">
+                            {ord.courier_name.substring(0, 2)}
                           </div>
-                          <span className="text-xs text-neutral-400 block">{ord.customer_name} • {ord.courier_name}</span>
-                          <span className="text-[11px] text-neutral-500 font-mono">{ord.items.length} garmen ({ord.created_at})</span>
+                          <div>
+                            <span className="font-bold text-sm text-[#1B2559] block">{ord.customer_name}</span>
+                            <span className="text-xs text-[#A3AED0] font-mono">{ord.id} • {ord.courier_name} ({ord.courier_service})</span>
+                          </div>
                         </div>
+
                         <div className="text-right">
-                          <span className="font-mono text-sm font-semibold text-white block">
+                          <span className="font-bold text-sm text-[#1B2559] block">
                             Rp {ord.total_amount.toLocaleString('id-ID')}
                           </span>
-                          <button
-                            onClick={() => {
-                              setSelectedOrder(ord);
-                              setWaybillInput(ord.waybill_number || '');
-                              setActiveTab('orders');
-                            }}
-                            className="text-[10px] font-mono text-neutral-400 hover:text-white underline mt-0.5"
-                          >
-                            Buka Detail →
-                          </button>
+                          <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                            ord.payment_status === 'PAID'
+                              ? 'bg-[#05CD99]/10 text-[#05CD99]'
+                              : 'bg-[#FFB547]/10 text-[#FFB547]'
+                          }`}>
+                            {ord.payment_status}
+                          </span>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Biteship Live Calculator Widget */}
-                <div className="lg:col-span-5 bg-[#14151E] border border-neutral-800/80 rounded-xl p-6 space-y-4">
-                  <div className="border-b border-neutral-800 pb-3 flex items-center justify-between">
-                    <div>
-                      <h3 className="font-serif text-lg font-light text-white">
-                        Uji Tarif Biteship Live
-                      </h3>
-                      <span className="text-[10px] font-mono text-neutral-500">
-                        Origin: Senopati, Jaksel (12190)
+                {/* Biteship Rate Testing Card */}
+                <div className="lg:col-span-4 bg-white rounded-[20px] p-6 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between pb-4 border-b border-[#F4F7FE]">
+                      <div>
+                        <h3 className="text-lg font-bold text-[#1B2559]">Biteship Live Test</h3>
+                        <p className="text-[11px] text-[#A3AED0]">Origin: Kebayoran Baru, Jaksel (12190)</p>
+                      </div>
+                      <span className="text-[10px] font-bold uppercase bg-[#EBF3FF] text-[#3399FF] px-2 py-0.5 rounded-full">
+                        Aggregator
                       </span>
                     </div>
-                    <span className="text-[9px] font-mono bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20 font-bold uppercase">
-                      API LIVE
-                    </span>
+
+                    <div className="mt-4 space-y-3 text-xs">
+                      <div>
+                        <label className="text-[11px] font-bold text-[#2B3674] uppercase block mb-1">
+                          Destination City / Area
+                        </label>
+                        <input
+                          type="text"
+                          value={calcDest}
+                          onChange={(e) => setCalcDest(e.target.value)}
+                          placeholder="e.g. Bandung / Surabaya / Medan"
+                          className="w-full bg-[#F4F7FE] border-none rounded-xl px-3.5 py-2.5 text-[#2B3674] font-medium outline-none focus:ring-2 focus:ring-[#4318FF]/20"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-[11px] font-bold text-[#2B3674] uppercase block mb-1">
+                          Package Weight (Kg)
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="20"
+                          value={calcWeight}
+                          onChange={(e) => setCalcWeight(e.target.value)}
+                          className="w-full bg-[#F4F7FE] border-none rounded-xl px-3.5 py-2.5 text-[#2B3674] font-medium outline-none focus:ring-2 focus:ring-[#4318FF]/20"
+                        />
+                      </div>
+
+                      <button
+                        onClick={handleRunBiteshipTest}
+                        disabled={isCalculating}
+                        className="w-full py-3 bg-[#4318FF] text-white font-bold text-xs rounded-xl shadow-[0px_10px_20px_rgba(67,24,255,0.24)] hover:bg-[#3311CC] transition-colors flex items-center justify-center gap-2 mt-2"
+                      >
+                        {isCalculating ? (
+                          <>
+                            <RefreshCw size={14} className="animate-spin" />
+                            <span>Querying Couriers...</span>
+                          </>
+                        ) : (
+                          <span>Calculate Rates</span>
+                        )}
+                      </button>
+
+                      {/* Result Pills */}
+                      {calcResult && (
+                        <div className="pt-2 space-y-2 border-t border-[#F4F7FE] animate-fade-in text-[11px]">
+                          {calcResult.map((res, idx) => (
+                            <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-[#F4F7FE]">
+                              <div>
+                                <span className="font-bold text-[#1B2559]">{res.courier}</span>
+                                <span className="text-[#A3AED0] ml-1">({res.service})</span>
+                                <span className="block text-[10px] text-[#A3AED0]">{res.etd}</span>
+                              </div>
+                              <span className="font-bold text-[#05CD99]">
+                                Rp {res.price.toLocaleString('id-ID')}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="space-y-3 text-xs">
-                    <div>
-                      <label className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">
-                        KOTA / KECAMATAN TUJUAN
-                      </label>
-                      <input
-                        type="text"
-                        value={calcDest}
-                        onChange={(e) => setCalcDest(e.target.value)}
-                        placeholder="Contoh: Bandung / Surabaya / Medan"
-                        className="w-full bg-[#1A1B24] border border-neutral-800 rounded px-3 py-2 text-white outline-none focus:border-neutral-600"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">
-                        BERAT PAKET (KG)
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        value={calcWeight}
-                        onChange={(e) => setCalcWeight(e.target.value)}
-                        className="w-full bg-[#1A1B24] border border-neutral-800 rounded px-3 py-2 text-white outline-none focus:border-neutral-600"
-                      />
-                    </div>
-
-                    <button
-                      onClick={handleRunBiteshipTest}
-                      disabled={isCalculating}
-                      className="w-full py-2.5 bg-white text-black font-mono text-xs font-bold rounded hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2 mt-2"
-                    >
-                      {isCalculating ? (
-                        <>
-                          <RefreshCw size={13} className="animate-spin" />
-                          <span>Menghubungi Biteship...</span>
-                        </>
-                      ) : (
-                        <span>CEK ONGKIR REAL-TIME</span>
-                      )}
-                    </button>
-
-                    {/* Results list */}
-                    {calcResult && (
-                      <div className="pt-2 space-y-2 border-t border-neutral-800/80 animate-fade-in font-mono text-[11px]">
-                        {calcResult.map((res, idx) => (
-                          <div key={idx} className="flex items-center justify-between p-2 rounded bg-[#1A1B24]">
-                            <div>
-                              <span className="font-bold text-white">{res.courier}</span>
-                              <span className="text-neutral-400 ml-1">({res.service})</span>
-                              <span className="block text-[9px] text-neutral-500">{res.etd}</span>
-                            </div>
-                            <span className="font-bold text-emerald-400">
-                              Rp {res.price.toLocaleString('id-ID')}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                  <div className="pt-4 border-t border-[#F4F7FE] text-[11px] text-[#A3AED0] flex items-center justify-between">
+                    <span>Coverage: 34 Provinces</span>
+                    <span className="text-[#05CD99] font-bold">API Active</span>
                   </div>
                 </div>
+
               </div>
             </div>
           )}
 
-          {/* ══════════════════════════════════════════════════
-              TAB 2: ORDER & FULFILLMENT MANAGEMENT
-             ══════════════════════════════════════════════════ */}
+          {/* ═══════════════════════════════════════════════════
+              TAB 2: ORDERS & FULFILLMENT MANAGEMENT
+             ═══════════════════════════════════════════════════ */}
           {activeTab === 'orders' && (
-            <div className="space-y-6 animate-fade-in">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-800">
-                <div>
-                  <h2 className="text-2xl font-serif font-light text-white">
-                    Order & Fulfillment Hub
-                  </h2>
-                  <p className="text-xs text-neutral-400 mt-1">
-                    Kelola antrean pengemasan, nomor resi kurir Biteship, dan status pembayaran pesanan.
-                  </p>
-                </div>
-
-                {/* Filter Pills */}
-                <div className="flex flex-wrap items-center gap-2">
+            <div className="space-y-5 animate-fade-in">
+              {/* Filter Pills */}
+              <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-[20px] shadow-[0px_18px_40px_rgba(112,144,176,0.06)]">
+                <div className="flex flex-wrap gap-2">
                   {[
-                    { key: 'ALL', label: 'Semua Pesanan' },
-                    { key: 'PAID', label: 'Perlu Dipacking' },
-                    { key: 'SHIPPED', label: 'Telah Dikirim' },
-                    { key: 'PENDING', label: 'Menunggu Bayar' },
-                    { key: 'DELIVERED', label: 'Diterima' }
+                    { key: 'ALL', label: 'All Orders' },
+                    { key: 'PAID', label: 'Need Packing' },
+                    { key: 'SHIPPED', label: 'In Transit (Shipped)' },
+                    { key: 'PENDING', label: 'Awaiting Payment' },
+                    { key: 'DELIVERED', label: 'Delivered' }
                   ].map((f) => (
                     <button
                       key={f.key}
                       onClick={() => setOrderFilter(f.key)}
-                      className={`text-xs px-3 py-1.5 rounded-lg font-mono transition-all ${
+                      className={`text-xs px-4 py-2 rounded-xl font-bold transition-all ${
                         orderFilter === f.key
-                          ? 'bg-white text-black font-semibold shadow-xs'
-                          : 'bg-[#14151E] text-neutral-400 hover:text-white border border-neutral-800'
+                          ? 'bg-[#4318FF] text-white shadow-[0px_8px_16px_rgba(67,24,255,0.24)]'
+                          : 'text-[#A3AED0] hover:text-[#2B3674] hover:bg-[#F4F7FE]'
                       }`}
                     >
                       {f.label}
                     </button>
                   ))}
                 </div>
+
+                <span className="text-xs font-bold text-[#A3AED0] px-3 font-mono">
+                  Showing {filteredOrders.length} records
+                </span>
               </div>
 
-              {/* Orders Data Table */}
-              <div className="bg-[#14151E] border border-neutral-800/80 rounded-xl overflow-hidden shadow-xl">
+              {/* Horizon Table Card */}
+              <div className="bg-white rounded-[24px] p-6 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-[#181A24] border-b border-neutral-800 text-neutral-400 font-mono uppercase text-[10px]">
-                      <tr>
-                        <th className="p-4">Invoice & Tanggal</th>
-                        <th className="p-4">Customer & WhatsApp</th>
-                        <th className="p-4">Garmen Pesanan</th>
-                        <th className="p-4">Kurir Pilihan</th>
-                        <th className="p-4">Total Tagihan</th>
-                        <th className="p-4">Status Bayar</th>
-                        <th className="p-4">Logistik Resi</th>
-                        <th className="p-4 text-right">Aksi</th>
+                    <thead>
+                      <tr className="border-b border-[#F4F7FE] text-[#A3AED0] uppercase text-[11px] font-bold">
+                        <th className="pb-4">Invoice & Date</th>
+                        <th className="pb-4">Customer & WhatsApp</th>
+                        <th className="pb-4">Garment Items</th>
+                        <th className="pb-4">Courier</th>
+                        <th className="pb-4">Total Amount</th>
+                        <th className="pb-4">Payment</th>
+                        <th className="pb-4">Fulfillment</th>
+                        <th className="pb-4 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-neutral-800/60 font-sans">
+                    <tbody className="divide-y divide-[#F4F7FE]">
                       {filteredOrders.length === 0 ? (
                         <tr>
-                          <td colSpan="8" className="p-8 text-center text-neutral-500 font-mono text-xs">
-                            Tidak ada pesanan yang sesuai dengan filter ini.
+                          <td colSpan="8" className="py-8 text-center text-[#A3AED0] font-medium text-xs">
+                            No orders found matching the filter criteria.
                           </td>
                         </tr>
                       ) : (
                         filteredOrders.map((ord) => (
-                          <tr key={ord.id} className="hover:bg-[#1A1C28] transition-colors">
-                            <td className="p-4">
-                              <span className="font-mono font-bold text-white block">{ord.id}</span>
-                              <span className="text-[10px] font-mono text-neutral-500">{ord.created_at}</span>
+                          <tr key={ord.id} className="hover:bg-[#F4F7FE]/40 transition-colors">
+                            <td className="py-4">
+                              <span className="font-bold text-[#1B2559] block font-mono text-sm">{ord.id}</span>
+                              <span className="text-[11px] text-[#A3AED0] font-mono">{ord.created_at}</span>
                             </td>
 
-                            <td className="p-4">
-                              <div className="font-medium text-white">{ord.customer_name}</div>
+                            <td className="py-4">
+                              <div className="font-bold text-[#1B2559] text-sm">{ord.customer_name}</div>
                               <a
                                 href={`https://wa.me/${ord.customer_phone.replace(/^0/, '62')}`}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-[11px] text-emerald-400 hover:underline inline-flex items-center gap-1 font-mono mt-0.5"
+                                className="text-[11px] text-[#05CD99] font-bold hover:underline inline-flex items-center gap-1 font-mono mt-0.5"
                               >
                                 <span>{ord.customer_phone}</span>
                                 <ExternalLink size={10} />
                               </a>
                             </td>
 
-                            <td className="p-4 space-y-1">
+                            <td className="py-4 space-y-1">
                               {ord.items.map((it, idx) => (
                                 <div key={idx} className="flex items-center gap-2">
-                                  <img src={it.img} alt={it.name} className="w-6 h-7 object-cover rounded" />
-                                  <span className="text-neutral-300 text-[11px]">
-                                    {it.name} <strong className="font-mono text-white">({it.size} x{it.quantity})</strong>
+                                  <img src={it.img} alt={it.name} className="w-7 h-8 object-cover rounded-md" />
+                                  <span className="text-[#2B3674] text-xs">
+                                    {it.name} <strong className="font-mono text-[#4318FF]">({it.size} x{it.quantity})</strong>
                                   </span>
                                 </div>
                               ))}
                             </td>
 
-                            <td className="p-4 font-mono text-[11px]">
-                              <span className="font-bold text-white">{ord.courier_name}</span>
-                              <span className="block text-neutral-400 text-[10px]">{ord.courier_service}</span>
-                              <span className="text-neutral-500 text-[10px]">Ongkir: Rp {ord.shipping_cost.toLocaleString('id-ID')}</span>
+                            <td className="py-4 font-mono text-xs">
+                              <span className="font-bold text-[#1B2559]">{ord.courier_name}</span>
+                              <span className="block text-[#A3AED0] text-[10px]">{ord.courier_service}</span>
+                              <span className="text-[#707EAE] text-[10px]">Rp {ord.shipping_cost.toLocaleString('id-ID')}</span>
                             </td>
 
-                            <td className="p-4 font-mono font-semibold text-white">
+                            <td className="py-4 font-mono font-bold text-sm text-[#1B2559]">
                               Rp {ord.total_amount.toLocaleString('id-ID')}
-                              <span className="block text-[10px] text-neutral-500 font-normal">{ord.payment_type}</span>
+                              <span className="block text-[10px] text-[#A3AED0] font-normal">{ord.payment_type}</span>
                             </td>
 
-                            <td className="p-4">
-                              <span className={`inline-block px-2.5 py-1 rounded text-[10px] font-mono font-semibold uppercase ${
+                            <td className="py-4">
+                              <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase ${
                                 ord.payment_status === 'PAID'
-                                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                                  : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                                  ? 'bg-[#05CD99]/10 text-[#05CD99]'
+                                  : 'bg-[#FFB547]/10 text-[#FFB547]'
                               }`}>
                                 {ord.payment_status}
                               </span>
                             </td>
 
-                            <td className="p-4">
+                            <td className="py-4">
                               {ord.waybill_number ? (
                                 <div>
-                                  <span className="inline-block px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase">
+                                  <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#EBF3FF] text-[#3399FF] uppercase">
                                     {ord.fulfillment_status}
                                   </span>
-                                  <span className="block font-mono text-[10px] text-neutral-300 mt-1">
+                                  <span className="block font-mono text-[11px] text-[#2B3674] font-semibold mt-1">
                                     {ord.waybill_number}
                                   </span>
                                 </div>
                               ) : (
-                                <span className="inline-block px-2 py-0.5 rounded text-[9px] font-mono text-neutral-400 bg-neutral-800">
-                                  {ord.payment_status === 'PAID' ? 'BELUM ADA RESI' : 'MENUNGGU BAYAR'}
+                                <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold text-[#A3AED0] bg-[#F4F7FE]">
+                                  {ord.payment_status === 'PAID' ? 'NEEDS WAYBILL' : 'AWAITING PAYMENT'}
                                 </span>
                               )}
                             </td>
 
-                            <td className="p-4 text-right">
+                            <td className="py-4 text-right">
                               <button
                                 onClick={() => {
                                   setSelectedOrder(ord);
                                   setWaybillInput(ord.waybill_number || '');
                                 }}
-                                className="px-3 py-1.5 bg-white text-black rounded text-[11px] font-mono font-bold hover:bg-neutral-200 transition-colors shadow-xs"
+                                className="px-4 py-2 bg-[#F4F7FE] hover:bg-[#4318FF] hover:text-white text-[#4318FF] rounded-xl text-xs font-bold transition-all shadow-xs"
                               >
-                                Buka Pesanan
+                                Manage Order
                               </button>
                             </td>
                           </tr>
@@ -867,81 +793,72 @@ export default function AdminDashboard({ isOpen, onClose }) {
             </div>
           )}
 
-          {/* ══════════════════════════════════════════════════
-              TAB 3: LOGISTICS & BITESHIP HUB
-             ══════════════════════════════════════════════════ */}
+          {/* ═══════════════════════════════════════════════════
+              TAB 3: BITESHIP LOGISTICS HUB
+             ═══════════════════════════════════════════════════ */}
           {activeTab === 'logistics' && (
             <div className="space-y-6 animate-fade-in">
-              <div className="pb-4 border-b border-neutral-800">
-                <h2 className="text-2xl font-serif font-light text-white">
-                  Biteship Logistics Management Hub
-                </h2>
-                <p className="text-xs text-neutral-400 mt-1">
-                  Pusat kontrol integrasi ekspedisi, jadwal pickup kurir, dan pelacakan waybill otomatis.
-                </p>
-              </div>
-
-              {/* 3 Logistic Status Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
-                <div className="p-5 bg-[#14151E] border border-neutral-800 rounded-xl space-y-2">
-                  <span className="text-neutral-500 text-[10px] uppercase">GUDANG ASAL (ORIGIN)</span>
-                  <div className="text-sm font-bold text-white">Atelier Senopati HQ</div>
-                  <p className="text-neutral-400 text-[11px] font-sans">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div className="bg-white rounded-[20px] p-6 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] space-y-2">
+                  <span className="text-[#A3AED0] text-xs font-bold uppercase tracking-wider">WAREHOUSE ORIGIN</span>
+                  <div className="text-base font-bold text-[#1B2559]">Senopati Atelier HQ</div>
+                  <p className="text-xs text-[#707EAE]">
                     Kebayoran Baru, Jakarta Selatan, DKI Jakarta 12190
                   </p>
-                  <span className="text-[10px] text-emerald-400 block pt-1">
-                    ✓ Terverifikasi Geolocation Biteship
+                  <span className="text-xs text-[#05CD99] font-bold block pt-1">
+                    ✓ Verified Biteship Geolocation
                   </span>
                 </div>
 
-                <div className="p-5 bg-[#14151E] border border-neutral-800 rounded-xl space-y-2">
-                  <span className="text-neutral-500 text-[10px] uppercase">KURIR AKTIF TERHUBUNG</span>
-                  <div className="text-sm font-bold text-white">JNE • SiCepat • J&T • Anteraja</div>
-                  <p className="text-neutral-400 text-[11px] font-sans">
-                    Layanan Reguler, Express (YES), dan Kargo telah aktif.
+                <div className="bg-white rounded-[20px] p-6 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] space-y-2">
+                  <span className="text-[#A3AED0] text-xs font-bold uppercase tracking-wider">SUPPORTED COURIERS</span>
+                  <div className="text-base font-bold text-[#1B2559]">JNE • SiCepat • J&T • Anteraja</div>
+                  <p className="text-xs text-[#707EAE]">
+                    Regular, Express (YES), Cargo & Instant Courier Enabled.
                   </p>
-                  <span className="text-[10px] text-blue-400 block pt-1">
-                    ✓ Multi-carrier Aggregator Active
+                  <span className="text-xs text-[#3399FF] font-bold block pt-1">
+                    ✓ Aggregator Live API
                   </span>
                 </div>
 
-                <div className="p-5 bg-[#14151E] border border-neutral-800 rounded-xl space-y-2">
-                  <span className="text-neutral-500 text-[10px] uppercase">WHATSAPP WAYBILL DISPATCH</span>
-                  <div className="text-sm font-bold text-emerald-400">Automated Notification</div>
-                  <p className="text-neutral-400 text-[11px] font-sans">
-                    Pembeli otomatis menerima link resi saat paket diserahkan ke kurir.
+                <div className="bg-white rounded-[20px] p-6 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] space-y-2">
+                  <span className="text-[#A3AED0] text-xs font-bold uppercase tracking-wider">WHATSAPP DISPATCH</span>
+                  <div className="text-base font-bold text-[#05CD99]">Automated Concierge</div>
+                  <p className="text-xs text-[#707EAE]">
+                    Customers receive live tracking URL upon waybill registration.
                   </p>
-                  <span className="text-[10px] text-neutral-500 block pt-1">
-                    Format: Template Memoedja Concierge
+                  <span className="text-xs text-[#A3AED0] block pt-1">
+                    Powered by Fonnte / Wablas API
                   </span>
                 </div>
               </div>
 
-              {/* Logistic Packing Checklist */}
-              <div className="bg-[#14151E] border border-neutral-800 rounded-xl p-6 space-y-4">
-                <h3 className="font-serif text-lg font-light text-white">
-                  Antrean Paket Siap Pickup Kurir
+              {/* Ready to Pickup Table */}
+              <div className="bg-white rounded-[24px] p-6 shadow-[0px_18px_40px_rgba(112,144,176,0.08)]">
+                <h3 className="text-lg font-bold text-[#1B2559] mb-4">
+                  Courier Pickup Queue
                 </h3>
-                <div className="divide-y divide-neutral-800">
+
+                <div className="divide-y divide-[#F4F7FE]">
                   {orders.filter((o) => o.payment_status === 'PAID').map((ord) => (
-                    <div key={ord.id} className="py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div key={ord.id} className="py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-bold text-white">{ord.id}</span>
-                          <span className="text-[10px] font-mono bg-blue-500/10 text-blue-400 px-2 py-0.2 rounded font-semibold uppercase">
+                          <span className="font-mono text-sm font-bold text-[#1B2559]">{ord.id}</span>
+                          <span className="text-xs font-bold bg-[#EBF3FF] text-[#3399FF] px-2.5 py-0.5 rounded-full uppercase">
                             {ord.courier_name} {ord.courier_service}
                           </span>
                         </div>
-                        <span className="text-xs text-neutral-300 block">{ord.customer_name} — {ord.address_detail}</span>
-                        <span className="text-[11px] text-neutral-400 font-mono">
-                          {ord.items.map((i) => `${i.name} (Size ${i.size})`).join(', ')}
+                        <span className="text-xs text-[#2B3674] block font-medium">{ord.customer_name} — {ord.address_detail}</span>
+                        <span className="text-xs text-[#A3AED0] font-mono">
+                          {ord.items.map((i) => `${i.name} (${i.size})`).join(', ')}
                         </span>
                       </div>
 
                       <div className="flex items-center gap-3">
                         {ord.waybill_number ? (
-                          <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded border border-emerald-500/20">
-                            Resi: {ord.waybill_number}
+                          <span className="text-xs font-mono font-bold text-[#05CD99] bg-[#05CD99]/10 px-3.5 py-2 rounded-xl">
+                            Waybill: {ord.waybill_number}
                           </span>
                         ) : (
                           <button
@@ -949,9 +866,9 @@ export default function AdminDashboard({ isOpen, onClose }) {
                               setSelectedOrder(ord);
                               setWaybillInput('');
                             }}
-                            className="px-4 py-2 bg-white text-black font-mono text-xs font-bold rounded hover:bg-neutral-200 transition-colors"
+                            className="px-4 py-2 bg-[#4318FF] text-white font-bold text-xs rounded-xl shadow-xs hover:bg-[#3311CC] transition-colors"
                           >
-                            Generate Resi
+                            Generate Waybill
                           </button>
                         )}
                       </div>
@@ -962,59 +879,55 @@ export default function AdminDashboard({ isOpen, onClose }) {
             </div>
           )}
 
-          {/* ══════════════════════════════════════════════════
-              TAB 4: INVENTORY & ATELIER PIPELINE
-             ══════════════════════════════════════════════════ */}
+          {/* ═══════════════════════════════════════════════════
+              TAB 4: STOCK & ATELIER PIPELINE
+             ═══════════════════════════════════════════════════ */}
           {activeTab === 'inventory' && (
             <div className="space-y-6 animate-fade-in">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-800">
+              <div className="flex items-center justify-between bg-white p-5 rounded-[20px] shadow-[0px_18px_40px_rgba(112,144,176,0.06)]">
                 <div>
-                  <h2 className="text-2xl font-serif font-light text-white">
-                    Stock Matrix & Atelier Pipeline
-                  </h2>
-                  <p className="text-xs text-neutral-400 mt-1">
-                    Kontrol stok garmen per ukuran dan pemantauan tahap produksi kain.
-                  </p>
+                  <h3 className="text-lg font-bold text-[#1B2559]">Garment Inventory Matrix</h3>
+                  <p className="text-xs text-[#A3AED0]">Real-time stock per sizing for Tarombo Drop 01</p>
                 </div>
-                <span className="text-xs font-mono bg-neutral-800 text-neutral-300 px-3 py-1.5 rounded-lg border border-neutral-700">
-                  Total Fisik: {totalUnits} Pcs
+                <span className="text-xs font-bold bg-[#F4F7FE] text-[#4318FF] px-3.5 py-2 rounded-xl font-mono">
+                  Total Units: {totalUnits} Pcs
                 </span>
               </div>
 
-              {/* 5 SKU Interactive Stock Matrix */}
-              <div className="space-y-4">
+              {/* 5 SKU Product Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {stockState.map((product) => (
-                  <div key={product.id} className="bg-[#14151E] border border-neutral-800 rounded-xl p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-5 hover:border-neutral-700 transition-all">
-                    <div className="flex items-center gap-4">
-                      <img src={product.primaryImage} alt={product.name} className="w-16 h-20 object-cover rounded-lg border border-neutral-700 shrink-0" />
+                  <div key={product.id} className="bg-white rounded-[20px] p-5 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] flex flex-col justify-between">
+                    <div className="flex items-start gap-4">
+                      <img src={product.primaryImage} alt={product.name} className="w-20 h-24 object-cover rounded-xl shrink-0" />
                       <div>
-                        <span className="text-[10px] font-mono text-neutral-500 uppercase block">{product.id} • {product.badge}</span>
-                        <h4 className="font-serif text-lg font-normal text-white">{product.name}</h4>
-                        <span className="text-xs font-mono text-neutral-400 block mt-0.5">{product.priceFormatted} • {product.weight}</span>
-                        <span className="text-[11px] text-neutral-500 font-light block">{product.fabric}</span>
+                        <span className="text-[10px] font-bold font-mono text-[#A3AED0] uppercase">{product.id} • {product.badge}</span>
+                        <h4 className="font-bold text-base text-[#1B2559] mt-0.5">{product.name}</h4>
+                        <span className="text-xs font-bold text-[#4318FF] font-mono block mt-1">{product.priceFormatted}</span>
+                        <span className="text-xs text-[#707EAE] block mt-0.5">{product.fabric} ({product.weight})</span>
                       </div>
                     </div>
 
-                    {/* Size matrix buttons */}
-                    <div className="flex flex-wrap items-center gap-2.5">
+                    {/* Sizing Controller */}
+                    <div className="mt-5 pt-4 border-t border-[#F4F7FE] flex flex-wrap items-center gap-2">
                       {product.sizes.map((sz) => {
                         const count = product.stockPerSize[sz] || 0;
                         return (
-                          <div key={sz} className="bg-[#1A1B24] border border-neutral-800 rounded-lg p-2 text-center min-w-[76px]">
-                            <span className="text-[9px] font-mono text-neutral-400 block font-semibold uppercase">SIZE {sz}</span>
-                            <div className="flex items-center justify-center gap-2 mt-1">
+                          <div key={sz} className="bg-[#F4F7FE] rounded-xl p-2 text-center flex-1 min-w-[64px]">
+                            <span className="text-[10px] font-bold text-[#A3AED0] block uppercase">{sz}</span>
+                            <div className="flex items-center justify-center gap-1.5 mt-1">
                               <button
                                 onClick={() => handleStockDelta(product.id, sz, -1)}
-                                className="w-5 h-5 rounded bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold flex items-center justify-center text-xs"
+                                className="w-5 h-5 rounded-md bg-white hover:bg-neutral-200 text-[#2B3674] font-bold text-xs flex items-center justify-center shadow-xs"
                               >
                                 -
                               </button>
-                              <span className={`font-mono text-xs font-bold ${count < 15 ? 'text-amber-400' : 'text-white'}`}>
+                              <span className={`font-mono text-xs font-bold ${count < 15 ? 'text-[#FFB547]' : 'text-[#1B2559]'}`}>
                                 {count}
                               </span>
                               <button
                                 onClick={() => handleStockDelta(product.id, sz, 1)}
-                                className="w-5 h-5 rounded bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold flex items-center justify-center text-xs"
+                                className="w-5 h-5 rounded-md bg-white hover:bg-neutral-200 text-[#2B3674] font-bold text-xs flex items-center justify-center shadow-xs"
                               >
                                 +
                               </button>
@@ -1027,25 +940,23 @@ export default function AdminDashboard({ isOpen, onClose }) {
                 ))}
               </div>
 
-              {/* Production Stages Progress */}
-              <div className="bg-[#14151E] border border-neutral-800 rounded-xl p-6 space-y-4">
-                <h3 className="font-serif text-lg font-light text-white">
-                  Tahapan Produksi Batch (Tarombo Drop 01)
-                </h3>
+              {/* Production Batch Stages */}
+              <div className="bg-white rounded-[24px] p-6 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] space-y-4">
+                <h3 className="text-lg font-bold text-[#1B2559]">Production Batch Pipeline</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {PRODUCTION_STAGES.map((stg) => (
-                    <div key={stg.id} className="p-4 bg-[#1A1B24] rounded-lg border border-neutral-800 space-y-2">
-                      <div className="flex items-center justify-between text-[10px] font-mono">
-                        <span className="text-neutral-500">{stg.date}</span>
-                        <span className={`px-2 py-0.2 rounded font-bold uppercase ${
-                          stg.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400' : stg.status === 'In Progress' ? 'bg-blue-500/10 text-blue-400' : 'bg-neutral-800 text-neutral-400'
+                    <div key={stg.id} className="p-4 bg-[#F4F7FE] rounded-2xl space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-[#A3AED0] font-mono">{stg.date}</span>
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                          stg.status === 'Completed' ? 'bg-[#05CD99]/10 text-[#05CD99]' : stg.status === 'In Progress' ? 'bg-[#3399FF]/10 text-[#3399FF]' : 'bg-neutral-200 text-[#707EAE]'
                         }`}>
                           {stg.status}
                         </span>
                       </div>
-                      <h4 className="font-serif text-sm font-medium text-white">{stg.name}</h4>
-                      <div className="w-full bg-neutral-800 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-white h-full rounded-full transition-all" style={{ width: `${stg.progress}%` }} />
+                      <h4 className="font-bold text-sm text-[#1B2559]">{stg.name}</h4>
+                      <div className="w-full bg-white h-2 rounded-full overflow-hidden shadow-inner">
+                        <div className="bg-[#4318FF] h-full rounded-full transition-all" style={{ width: `${stg.progress}%` }} />
                       </div>
                     </div>
                   ))}
@@ -1054,148 +965,115 @@ export default function AdminDashboard({ isOpen, onClose }) {
             </div>
           )}
 
-          {/* ══════════════════════════════════════════════════
+          {/* ═══════════════════════════════════════════════════
               TAB 5: MIDTRANS FINANCIAL RECONCILIATION
-             ══════════════════════════════════════════════════ */}
+             ═══════════════════════════════════════════════════ */}
           {activeTab === 'finance' && (currentUser.role === 'SUPER_ADMIN' || currentUser.role === 'FINANCE') && (
             <div className="space-y-6 animate-fade-in">
-              <div className="pb-4 border-b border-neutral-800">
-                <h2 className="text-2xl font-serif font-light text-white">
-                  Midtrans Financial Reconciliation
-                </h2>
-                <p className="text-xs text-neutral-400 mt-1">
-                  Panel khusus CFO (Aristo Rafif) untuk rekonsiliasi pembayaran QRIS, Virtual Account, dan pencairan dana bersih.
-                </p>
-              </div>
-
-              {/* Financial Calculation Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono">
-                <div className="p-5 bg-[#14151E] border border-neutral-800 rounded-xl space-y-1">
-                  <span className="text-neutral-500 text-[10px] uppercase">TOTAL GROSS TRANSAKSI LUNAS</span>
-                  <div className="text-2xl font-bold text-white">Rp {totalOmset.toLocaleString('id-ID')}</div>
-                  <span className="text-[10px] text-emerald-400 block">100% Terverifikasi SHA-512</span>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div className="bg-white rounded-[20px] p-6 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] space-y-1">
+                  <span className="text-[#A3AED0] text-xs font-bold uppercase">GROSS MIDTRANS TRANSACTIONS</span>
+                  <div className="text-2xl font-bold text-[#1B2559]">Rp {totalOmset.toLocaleString('id-ID')}</div>
+                  <span className="text-xs text-[#05CD99] font-bold">100% SHA-512 Validated</span>
                 </div>
 
-                <div className="p-5 bg-[#14151E] border border-neutral-800 rounded-xl space-y-1">
-                  <span className="text-neutral-500 text-[10px] uppercase">ESTIMASI GATEWAY FEE (1.5%)</span>
-                  <div className="text-2xl font-bold text-neutral-400">Rp {Math.round(totalOmset * 0.015).toLocaleString('id-ID')}</div>
-                  <span className="text-[10px] text-neutral-500 block">MDR Standar Midtrans</span>
+                <div className="bg-white rounded-[20px] p-6 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] space-y-1">
+                  <span className="text-[#A3AED0] text-xs font-bold uppercase">ESTIMATED GATEWAY MDR (1.5%)</span>
+                  <div className="text-2xl font-bold text-[#707EAE]">Rp {Math.round(totalOmset * 0.015).toLocaleString('id-ID')}</div>
+                  <span className="text-xs text-[#A3AED0]">Standard Midtrans Fee</span>
                 </div>
 
-                <div className="p-5 bg-[#14151E] border border-neutral-800 rounded-xl space-y-1">
-                  <span className="text-neutral-500 text-[10px] uppercase">NET ESTIMASI CAIR KE REKENING</span>
-                  <div className="text-2xl font-bold text-emerald-400">Rp {Math.round(totalOmset * 0.985).toLocaleString('id-ID')}</div>
-                  <span className="text-[10px] text-neutral-400 block">BCA Memoedja Corporate</span>
+                <div className="bg-white rounded-[20px] p-6 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] space-y-1">
+                  <span className="text-[#A3AED0] text-xs font-bold uppercase">NET CORPORATE PAYOUT</span>
+                  <div className="text-2xl font-bold text-[#05CD99]">Rp {Math.round(totalOmset * 0.985).toLocaleString('id-ID')}</div>
+                  <span className="text-xs text-[#707EAE]">BCA Memoedja Corporate</span>
                 </div>
               </div>
 
-              {/* Payment Methods Distribution */}
-              <div className="bg-[#14151E] border border-neutral-800 rounded-xl p-6 space-y-4">
-                <h3 className="font-serif text-lg font-light text-white">
-                  Distribusi Metode Pembayaran
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
-                  <div className="p-4 bg-[#1A1B24] rounded-lg border border-neutral-800 space-y-1">
-                    <span className="text-neutral-400">QRIS (GoPay / BCA Mobile)</span>
-                    <div className="text-base font-bold text-white">62% (Favorit Pembeli)</div>
-                    <span className="text-[10px] text-emerald-400">Instan Real-time Settlement</span>
+              {/* Payment Methods Breakdown */}
+              <div className="bg-white rounded-[24px] p-6 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] space-y-4">
+                <h3 className="text-lg font-bold text-[#1B2559]">Payment Method Analytics</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                  <div className="p-4 bg-[#F4F7FE] rounded-2xl space-y-1">
+                    <span className="text-[#707EAE] font-bold uppercase">QRIS (GoPay / BCA Mobile)</span>
+                    <div className="text-xl font-bold text-[#1B2559]">62% Volume</div>
+                    <span className="text-[#05CD99] font-bold">Instant Settlement</span>
                   </div>
-                  <div className="p-4 bg-[#1A1B24] rounded-lg border border-neutral-800 space-y-1">
-                    <span className="text-neutral-400">Virtual Account (BCA/Mandiri)</span>
-                    <div className="text-base font-bold text-white">28%</div>
-                    <span className="text-[10px] text-blue-400">Auto Reconciled</span>
+                  <div className="p-4 bg-[#F4F7FE] rounded-2xl space-y-1">
+                    <span className="text-[#707EAE] font-bold uppercase">Virtual Account (BCA / Mandiri)</span>
+                    <div className="text-xl font-bold text-[#1B2559]">28% Volume</div>
+                    <span className="text-[#3399FF] font-bold">Auto-Reconciled</span>
                   </div>
-                  <div className="p-4 bg-[#1A1B24] rounded-lg border border-neutral-800 space-y-1">
-                    <span className="text-neutral-400">Kartu Kredit (Visa/Mastercard)</span>
-                    <div className="text-base font-bold text-white">10%</div>
-                    <span className="text-[10px] text-purple-400">3D Secure Verified</span>
+                  <div className="p-4 bg-[#F4F7FE] rounded-2xl space-y-1">
+                    <span className="text-[#707EAE] font-bold uppercase">Credit Card (Visa / Mastercard)</span>
+                    <div className="text-xl font-bold text-[#1B2559]">10% Volume</div>
+                    <span className="text-[#868CFF] font-bold">3D Secure Verified</span>
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* ══════════════════════════════════════════════════
+          {/* ═══════════════════════════════════════════════════
               TAB 6: TEAM PERMISSIONS & RBAC
-             ══════════════════════════════════════════════════ */}
+             ═══════════════════════════════════════════════════ */}
           {activeTab === 'users' && currentUser.role === 'SUPER_ADMIN' && (
             <div className="space-y-6 animate-fade-in">
-              <div className="pb-4 border-b border-neutral-800">
-                <h2 className="text-2xl font-serif font-light text-white">
-                  Team Roles & Role-Based Access Control
-                </h2>
-                <p className="text-xs text-neutral-400 mt-1">
-                  Pengaturan hak akses 4 level untuk menjaga privasi finansial dan operasional atelier.
-                </p>
-              </div>
+              <div className="bg-white rounded-[24px] p-6 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] divide-y divide-[#F4F7FE]">
+                <div className="pb-4">
+                  <h3 className="text-lg font-bold text-[#1B2559]">Internal Team Role-Based Access</h3>
+                  <p className="text-xs text-[#A3AED0]">Manage user permissions for Memoedja operations</p>
+                </div>
 
-              <div className="bg-[#14151E] border border-neutral-800 rounded-xl divide-y divide-neutral-800">
                 {USERS.map((u) => (
-                  <div key={u.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div key={u.id} className="py-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${u.color} flex items-center justify-center font-mono font-bold text-white`}>
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#868CFF] to-[#4318FF] text-white flex items-center justify-center font-bold text-xs">
                         {u.avatar}
                       </div>
                       <div>
-                        <div className="font-medium text-white text-sm">{u.name}</div>
-                        <span className="text-xs text-neutral-400 font-mono">{u.email} • {u.title}</span>
+                        <div className="font-bold text-sm text-[#1B2559]">{u.name}</div>
+                        <span className="text-xs text-[#A3AED0]">{u.email} • {u.title}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs font-mono px-3 py-1 rounded bg-[#1A1B24] border border-neutral-700 text-neutral-300 font-bold">
-                        {u.roleLabel}
-                      </span>
-                      <span className="text-xs text-emerald-400 font-mono">● Active</span>
-                    </div>
+                    <span className={`text-xs font-bold px-3 py-1 rounded-full ${u.bgBadge}`}>
+                      {u.roleLabel}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* ══════════════════════════════════════════════════
+          {/* ═══════════════════════════════════════════════════
               TAB 7: EMBEDDED DOCUMENTATION & GUIDES
-             ══════════════════════════════════════════════════ */}
+             ═══════════════════════════════════════════════════ */}
           {activeTab === 'docs' && (
-            <div className="space-y-6 animate-fade-in text-neutral-200">
-              <div className="pb-4 border-b border-neutral-800">
-                <h2 className="text-2xl font-serif font-light text-white">
-                  Dokumentasi Sistem Operasional
-                </h2>
-                <p className="text-xs text-neutral-400 mt-1">
-                  Panduan lengkap arsitektur backend, konfigurasi Biteship, Midtrans, dan Shared Hosting cPanel.
+            <div className="bg-white rounded-[24px] p-8 shadow-[0px_18px_40px_rgba(112,144,176,0.08)] space-y-6 text-xs text-[#2B3674] leading-relaxed">
+              <div className="border-b border-[#F4F7FE] pb-4">
+                <h3 className="text-xl font-bold text-[#1B2559]">Shared Hosting (cPanel) Deployment Architecture</h3>
+                <p className="text-xs text-[#A3AED0]">No Node.js daemon required — Native PHP 8.x + MySQL + Static React SPA</p>
+              </div>
+
+              <div>
+                <h4 className="font-bold text-sm text-[#1B2559] mb-1">1. Routing Structure (.htaccess)</h4>
+                <p className="text-[#707EAE]">
+                  Requests are seamlessly delegated: frontend URLs are routed to <code className="bg-[#F4F7FE] text-[#4318FF] px-1.5 py-0.5 rounded font-mono font-bold">index.html</code> (HTML5 History Mode), while <code className="bg-[#F4F7FE] text-[#4318FF] px-1.5 py-0.5 rounded font-mono font-bold">/api/*</code> requests execute native PHP scripts directly without framework overhead.
                 </p>
               </div>
 
-              <div className="bg-[#14151E] border border-neutral-800 rounded-xl p-6 space-y-6 font-sans text-xs leading-relaxed">
-                <div>
-                  <h3 className="font-serif text-base font-bold text-white mb-2">
-                    1. Arsitektur Shared Hosting (cPanel)
-                  </h3>
-                  <p className="text-neutral-400">
-                    Proyek ini tidak memakai framework berat (tanpa Laravel/Docker). Frontend dikompilasi menjadi berkas statis super ringan di <code className="text-white bg-neutral-800 px-1 py-0.5 rounded font-mono">public_html</code>, sedangkan backend berjalan di folder <code className="text-white bg-neutral-800 px-1 py-0.5 rounded font-mono">public_html/api/</code> menggunakan PHP 8.x native dan MySQL PDO.
-                  </p>
-                </div>
+              <div>
+                <h4 className="font-bold text-sm text-[#1B2559] mb-1">2. Zero Trust Security & Anti-Abuse</h4>
+                <p className="text-[#707EAE]">
+                  Item prices are strictly validated on the server. The Midtrans Snap token generation verifies gross amounts against official prices, and the webhook listener validates SHA-512 cryptographic signatures.
+                </p>
+              </div>
 
-                <div className="border-t border-neutral-800 pt-4">
-                  <h3 className="font-serif text-base font-bold text-white mb-2">
-                    2. Kunci Keamanan API (Anti-Abuse)
-                  </h3>
-                  <ul className="list-disc list-inside space-y-1 text-neutral-400">
-                    <li><strong className="text-white">Zero Trust Frontend:</strong> Total harga pesanan dihitung ulang di server sebelum dikirim ke Midtrans.</li>
-                    <li><strong className="text-white">SHA-512 Signature Verification:</strong> Midtrans webhook wajib diverifikasi dengan algoritma hash resmi sebelum pesanan diubah jadi PAID.</li>
-                    <li><strong className="text-white">Gitleaks & Semgrep:</strong> Setiap commit ke GitHub diaudit otomatis agar tidak ada kebocoran kredensial.</li>
-                  </ul>
-                </div>
-
-                <div className="border-t border-neutral-800 pt-4">
-                  <h3 className="font-serif text-base font-bold text-white mb-2">
-                    3. Auto-Deploy GitHub Actions ke cPanel
-                  </h3>
-                  <p className="text-neutral-400">
-                    Setiap kali <code className="text-white bg-neutral-800 px-1 py-0.5 rounded font-mono">git push origin main</code> dijalankan, GitHub Actions secara otomatis meng-compile React dan mengunggahnya ke hosting Anda via FTP. Panduan lengkap ada di berkas <strong className="text-white font-mono">DEPLOY_CPANEL.md</strong>.
-                  </p>
-                </div>
+              <div>
+                <h4 className="font-bold text-sm text-[#1B2559] mb-1">3. Automated GitHub Actions Deployer</h4>
+                <p className="text-[#707EAE]">
+                  Pushes to <code className="bg-[#F4F7FE] text-[#4318FF] px-1.5 py-0.5 rounded font-mono font-bold">main</code> trigger automatic Vite compilation and FTPS synchronization to cPanel <code className="bg-[#F4F7FE] text-[#4318FF] px-1.5 py-0.5 rounded font-mono font-bold">public_html</code> via <code className="bg-[#F4F7FE] text-[#4318FF] px-1.5 py-0.5 rounded font-mono font-bold">.github/workflows/deploy-cpanel.yml</code>.
+                </p>
               </div>
             </div>
           )}
@@ -1203,141 +1081,141 @@ export default function AdminDashboard({ isOpen, onClose }) {
         </main>
       </div>
 
-      {/* ── SLIDE-OVER ORDER DETAIL DRAWER / MODAL ── */}
+      {/* ═══════════════════════════════════════════════════════════
+          HORIZON UI ORDER MANAGEMENT SLIDE-OVER DRAWER
+         ═══════════════════════════════════════════════════════════ */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-xs flex justify-end animate-fade-in">
-          <div className="w-full max-w-xl bg-[#12131A] border-l border-neutral-800 h-full p-6 flex flex-col justify-between overflow-y-auto">
+        <div className="fixed inset-0 z-60 bg-black/40 backdrop-blur-xs flex justify-end animate-fade-in">
+          <div className="w-full max-w-lg bg-white h-full p-8 flex flex-col justify-between overflow-y-auto shadow-2xl">
             <div className="space-y-6">
-              {/* Drawer Header */}
-              <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
+              {/* Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-[#F4F7FE]">
                 <div>
-                  <span className="text-[10px] font-mono text-neutral-500 uppercase block">DETAIL PESANAN</span>
-                  <h3 className="font-mono text-lg font-bold text-white">{selectedOrder.id}</h3>
+                  <span className="text-[10px] font-bold text-[#A3AED0] uppercase">Order Details</span>
+                  <h3 className="font-mono text-lg font-bold text-[#1B2559]">{selectedOrder.id}</h3>
                 </div>
                 <button
                   onClick={() => setSelectedOrder(null)}
-                  className="p-1.5 text-neutral-400 hover:text-white rounded-lg hover:bg-neutral-800"
+                  className="w-8 h-8 rounded-full bg-[#F4F7FE] text-[#A3AED0] hover:text-[#2B3674] flex items-center justify-center transition-colors"
                 >
-                  <X size={18} />
+                  <X size={16} />
                 </button>
               </div>
 
               {/* Status Badges */}
               <div className="flex items-center gap-2">
-                <span className={`text-[10px] font-mono px-2.5 py-1 rounded font-bold uppercase ${
+                <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase ${
                   selectedOrder.payment_status === 'PAID'
-                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                    : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                    ? 'bg-[#05CD99]/10 text-[#05CD99]'
+                    : 'bg-[#FFB547]/10 text-[#FFB547]'
                 }`}>
-                  PEMBAYARAN: {selectedOrder.payment_status}
+                  {selectedOrder.payment_status}
                 </span>
 
-                <span className="text-[10px] font-mono px-2.5 py-1 rounded font-bold uppercase bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                  STATUS: {selectedOrder.fulfillment_status}
+                <span className="text-xs font-bold px-3 py-1 rounded-full uppercase bg-[#EBF3FF] text-[#3399FF]">
+                  {selectedOrder.fulfillment_status}
                 </span>
               </div>
 
-              {/* Customer Info */}
-              <div className="p-4 bg-[#181A24] rounded-lg border border-neutral-800 space-y-2 text-xs">
-                <span className="text-[10px] font-mono text-neutral-500 uppercase block">DATA PENERIMA</span>
-                <div className="font-bold text-white text-sm">{selectedOrder.customer_name}</div>
-                <div className="flex items-center gap-3 text-neutral-400">
+              {/* Customer Box */}
+              <div className="p-4 bg-[#F4F7FE] rounded-2xl space-y-2 text-xs">
+                <span className="text-[10px] font-bold text-[#A3AED0] uppercase block">RECIPIENT INFORMATION</span>
+                <div className="font-bold text-sm text-[#1B2559]">{selectedOrder.customer_name}</div>
+                <div className="flex items-center gap-2 text-[#707EAE]">
                   <span>{selectedOrder.customer_email}</span>
                   <span>•</span>
                   <a
                     href={`https://wa.me/${selectedOrder.customer_phone.replace(/^0/, '62')}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-emerald-400 hover:underline flex items-center gap-1 font-mono"
+                    className="text-[#05CD99] font-bold hover:underline inline-flex items-center gap-1 font-mono"
                   >
                     <Phone size={11} />
                     <span>{selectedOrder.customer_phone}</span>
                   </a>
                 </div>
-                <p className="text-neutral-300 pt-1 leading-relaxed border-t border-neutral-800 mt-2">
-                  <MapPin size={12} className="inline mr-1 text-neutral-500" />
+                <p className="text-[#2B3674] font-medium leading-relaxed pt-2 border-t border-white/60">
+                  <MapPin size={12} className="inline mr-1 text-[#4318FF]" />
                   {selectedOrder.address_detail}
                 </p>
               </div>
 
-              {/* Garment Items List */}
-              <div className="space-y-3">
-                <span className="text-[10px] font-mono text-neutral-500 uppercase block">ITEM GARMEN DIPESAN</span>
-                <div className="space-y-2">
-                  {selectedOrder.items.map((it, idx) => (
-                    <div key={idx} className="p-3 bg-[#181A24] rounded-lg border border-neutral-800 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <img src={it.img} alt={it.name} className="w-10 h-12 object-cover rounded border border-neutral-700" />
-                        <div>
-                          <div className="font-medium text-white text-xs">{it.name}</div>
-                          <span className="text-[11px] font-mono text-neutral-400">Size: {it.size} • Qty: {it.quantity}x</span>
-                        </div>
+              {/* Garments List */}
+              <div className="space-y-2">
+                <span className="text-[10px] font-bold text-[#A3AED0] uppercase block">ORDERED ITEMS</span>
+                {selectedOrder.items.map((it, idx) => (
+                  <div key={idx} className="p-3 bg-[#F4F7FE] rounded-2xl flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <img src={it.img} alt={it.name} className="w-10 h-12 object-cover rounded-lg" />
+                      <div>
+                        <div className="font-bold text-xs text-[#1B2559]">{it.name}</div>
+                        <span className="text-[11px] font-mono text-[#A3AED0]">Size: {it.size} • Qty: {it.quantity}x</span>
                       </div>
-                      <span className="font-mono text-xs font-bold text-white">
-                        Rp {(it.price * it.quantity).toLocaleString('id-ID')}
-                      </span>
                     </div>
-                  ))}
-                </div>
+                    <span className="font-mono text-xs font-bold text-[#1B2559]">
+                      Rp {(it.price * it.quantity).toLocaleString('id-ID')}
+                    </span>
+                  </div>
+                ))}
               </div>
 
-              {/* Shipping & Payment Summary */}
-              <div className="p-4 bg-[#181A24] rounded-lg border border-neutral-800 font-mono text-xs space-y-2">
-                <div className="flex justify-between text-neutral-400">
-                  <span>Subtotal Garmen:</span>
+              {/* Pricing breakdown */}
+              <div className="p-4 bg-[#F4F7FE] rounded-2xl text-xs font-mono space-y-1.5">
+                <div className="flex justify-between text-[#707EAE]">
+                  <span>Subtotal:</span>
                   <span>Rp {selectedOrder.subtotal_amount.toLocaleString('id-ID')}</span>
                 </div>
-                <div className="flex justify-between text-neutral-400">
-                  <span>Ongkir ({selectedOrder.courier_name} {selectedOrder.courier_service}):</span>
+                <div className="flex justify-between text-[#707EAE]">
+                  <span>Shipping ({selectedOrder.courier_name} {selectedOrder.courier_service}):</span>
                   <span>Rp {selectedOrder.shipping_cost.toLocaleString('id-ID')}</span>
                 </div>
-                <div className="flex justify-between text-white font-bold text-sm pt-2 border-t border-neutral-800">
-                  <span>Total Tagihan:</span>
-                  <span className="text-emerald-400">Rp {selectedOrder.total_amount.toLocaleString('id-ID')}</span>
+                <div className="flex justify-between text-[#1B2559] font-bold text-sm pt-2 border-t border-white/60">
+                  <span>Grand Total:</span>
+                  <span className="text-[#05CD99]">Rp {selectedOrder.total_amount.toLocaleString('id-ID')}</span>
                 </div>
               </div>
 
-              {/* Resi Input Form */}
-              <div className="p-4 bg-[#181A24] rounded-lg border border-neutral-800 space-y-3">
-                <span className="text-[10px] font-mono text-neutral-400 uppercase block font-semibold">
-                  INPUT / UPDATE RESI KURIR BITESHIP
-                </span>
+              {/* Waybill Input */}
+              <div className="p-4 bg-[#F4F7FE] rounded-2xl space-y-2.5">
+                <label className="text-[10px] font-bold text-[#2B3674] uppercase block">
+                  Biteship Waybill / Courier Resi
+                </label>
                 <input
                   type="text"
-                  placeholder="Contoh: JNE88291029312 / SCP9928192"
+                  placeholder="e.g. JNE88291029312 / SCP9928192"
                   value={waybillInput}
                   onChange={(e) => setWaybillInput(e.target.value)}
-                  className="w-full bg-[#12131A] border border-neutral-700 rounded-lg p-2.5 text-xs font-mono text-white outline-none focus:border-white"
+                  className="w-full bg-white border-none rounded-xl p-3 text-xs font-mono text-[#2B3674] font-bold outline-none focus:ring-2 focus:ring-[#4318FF]/20"
                 />
 
                 <div className="flex items-center gap-2 pt-1">
                   <input
                     type="checkbox"
-                    id="waNotify"
+                    id="waNotifyCheck"
                     checked={notifyWa}
                     onChange={(e) => setNotifyWa(e.target.checked)}
-                    className="rounded cursor-pointer"
+                    className="rounded text-[#4318FF] focus:ring-[#4318FF]"
                   />
-                  <label htmlFor="waNotify" className="text-xs text-neutral-300 cursor-pointer">
-                    Kirim notifikasi otomatis ke WhatsApp customer setelah disimpan
+                  <label htmlFor="waNotifyCheck" className="text-xs text-[#707EAE] cursor-pointer">
+                    Send WhatsApp dispatch message with tracking link
                   </label>
                 </div>
               </div>
             </div>
 
-            {/* Drawer Bottom Actions */}
-            <div className="pt-6 border-t border-neutral-800 flex gap-3">
+            {/* Bottom Actions */}
+            <div className="pt-6 border-t border-[#F4F7FE] flex gap-3">
               <button
                 onClick={() => setSelectedOrder(null)}
-                className="flex-1 py-2.5 rounded-lg border border-neutral-700 text-neutral-400 hover:text-white font-mono text-xs font-semibold"
+                className="flex-1 py-3 rounded-xl bg-[#F4F7FE] text-[#707EAE] font-bold text-xs hover:bg-neutral-200 transition-colors"
               >
-                Tutup
+                Close
               </button>
               <button
                 onClick={() => handleSaveWaybill(selectedOrder.id)}
-                className="flex-1 py-2.5 rounded-lg bg-white text-black font-mono text-xs font-bold hover:bg-neutral-200 transition-colors shadow-xs"
+                className="flex-1 py-3 rounded-xl bg-[#4318FF] text-white font-bold text-xs shadow-[0px_10px_20px_rgba(67,24,255,0.24)] hover:bg-[#3311CC] transition-colors"
               >
-                Simpan & Update Resi
+                Save & Dispatch
               </button>
             </div>
           </div>
