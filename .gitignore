@@ -12,6 +12,17 @@ dist
 dist-ssr
 *.local
 
+# Environment variables & Sensitive Credentials
+.env
+.env.*
+!.env.example
+api/config.php
+*.pem
+*.key
+*.cert
+*.sql
+*.sqlite
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

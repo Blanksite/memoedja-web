@@ -1,0 +1,35 @@
+# Gitleaks Configuration for MEMOEDJA E-Commerce
+title = "MEMOEDJA Gitleaks Security Rules"
+
+[extend]
+useDefault = true
+
+# Custom Rules for Payment & Logistics APIs
+[[rules]]
+id = "midtrans-server-key"
+description = "Midtrans Server Key (Sandbox / Production)"
+regex = '''(?i)(SB-Mid-server-[a-zA-Z0-9_\-]{20,}|Mid-server-[a-zA-Z0-9_\-]{20,})'''
+secretGroup = 1
+keywords = ["mid-server", "midtrans"]
+
+[[rules]]
+id = "biteship-api-key"
+description = "Biteship Logistics API Key"
+regex = '''(?i)(biteship_test\.[a-zA-Z0-9_\-]{20,}|biteship_live\.[a-zA-Z0-9_\-]{20,})'''
+secretGroup = 1
+keywords = ["biteship"]
+
+# Whitelist / Allowlist for template and documentation files
+[allowlist]
+description = "Ignore example config files and documentation"
+paths = [
+  '''\.env\.example''',
+  '''\.env\.test''',
+  '''PRD_.*\.md''',
+  '''README\.md''',
+  '''api/config\.example\.php'''
+]
+regexes = [
+  '''biteship_test\.xxxxxxxx''',
+  '''SB-Mid-server-xxxxxxxx'''
+]
