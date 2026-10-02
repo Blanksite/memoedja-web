@@ -9,7 +9,7 @@ import Footer from './components/Footer';
 import ProductDetailModal from './components/ProductDetailModal';
 import CartDrawer from './components/CartDrawer';
 import CheckoutModal from './components/CheckoutModal';
-import InventoryManager from './components/InventoryManager';
+import AdminDashboard from './components/admin/AdminDashboard';
 import SearchModal from './components/SearchModal';
 import { useState } from 'react';
 
@@ -19,7 +19,9 @@ export default function App() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
+  const [isInventoryOpen, setIsInventoryOpen] = useState(() => {
+    return new URLSearchParams(window.location.search).has('admin');
+  });
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [currency, setCurrency] = useState("IDR");
 
@@ -144,11 +146,9 @@ export default function App() {
         onSuccessfulOrder={handleSuccessfulOrder}
       />
 
-      <InventoryManager
+      <AdminDashboard
         isOpen={isInventoryOpen}
         onClose={() => setIsInventoryOpen(false)}
-        products={products}
-        onUpdateStock={handleUpdateStock}
       />
 
       <SearchModal
