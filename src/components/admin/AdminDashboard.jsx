@@ -5,7 +5,7 @@ import {
   Send, Shield, ArrowUpRight, BarChart3, AlertCircle, 
   CreditCard, Eye, Printer, Filter, ChevronDown, Check,
   Layers, MapPin, Phone, Mail, FileText, ArrowLeft, Bell,
-  TrendingUp, TrendingDown, ArrowDownRight, Sparkles, Moon, Sun
+  TrendingUp, TrendingDown, ArrowDownRight, Sparkles, Moon, Sun, Menu
 } from 'lucide-react';
 import { PRODUCTS, PRODUCTION_STAGES } from '../../data/products';
 
@@ -149,6 +149,7 @@ export default function AdminDashboard({ isOpen, onClose }) {
   const [stockState, setStockState] = useState(PRODUCTS);
   const [waybillInput, setWaybillInput] = useState('');
   const [notifyWa, setNotifyWa] = useState(true);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   // Biteship Live Calculator Widget State
   const [calcDest, setCalcDest] = useState('Bandung');
@@ -289,10 +290,20 @@ export default function AdminDashboard({ isOpen, onClose }) {
   return (
     <div className="fixed inset-0 z-50 bg-[#F4F7FE] text-[#2B3674] flex font-sans overflow-hidden animate-fade-in">
       
+      {/* Mobile Drawer Overlay Backdrop */}
+      {isMobileNavOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-xs transition-opacity"
+          onClick={() => setIsMobileNavOpen(false)}
+        />
+      )}
+
       {/* ═══════════════════════════════════════════════════════════
-          HORIZON UI SIGNATURE SIDEBAR (White, Rounded, Clean)
+          HORIZON UI SIGNATURE SIDEBAR (Responsive Mobile Drawer + Desktop Sidebar)
          ═══════════════════════════════════════════════════════════ */}
-      <aside className="w-72 bg-white m-4 mr-0 rounded-[24px] shadow-[0px_18px_40px_rgba(112,144,176,0.08)] flex flex-col justify-between p-6 shrink-0 z-20">
+      <aside className={`fixed md:static inset-y-0 left-0 z-50 transition-transform duration-300 ease-in-out ${
+        isMobileNavOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+      } w-72 md:w-64 lg:w-72 bg-white m-0 md:m-4 md:mr-0 rounded-none md:rounded-[24px] shadow-[0px_18px_40px_rgba(112,144,176,0.15)] flex flex-col justify-between p-6 shrink-0`}>
         <div>
           {/* Brand Logo & Studio Mark */}
           <div className="pb-8 pt-2 px-2 border-b border-[#F4F7FE] flex items-center justify-between">
@@ -304,7 +315,17 @@ export default function AdminDashboard({ isOpen, onClose }) {
                 HORIZON OPS MATRIX
               </span>
             </div>
-            <span className="w-2.5 h-2.5 rounded-full bg-[#05CD99] animate-pulse" title="System Live" />
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#05CD99] animate-pulse" title="System Live" />
+              <button 
+                type="button"
+                onClick={() => setIsMobileNavOpen(false)}
+                className="md:hidden p-1.5 text-[#A3AED0] hover:text-[#1B2559] hover:bg-[#F4F7FE] rounded-lg transition-colors"
+                title="Tutup Menu"
+              >
+                <X size={20} />
+              </button>
+            </div>
           </div>
 
           {/* Nav Items */}
@@ -327,7 +348,10 @@ export default function AdminDashboard({ isOpen, onClose }) {
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    setIsMobileNavOpen(false);
+                  }}
                   className={`w-full flex items-center justify-between px-4 py-3.5 rounded-[16px] text-sm font-semibold transition-all relative ${
                     isActive
                       ? 'bg-[#4318FF] text-white shadow-[0px_10px_20px_rgba(67,24,255,0.24)]'
@@ -365,7 +389,10 @@ export default function AdminDashboard({ isOpen, onClose }) {
             All services connected to Midtrans & Biteship Sandbox.
           </p>
           <button
-            onClick={onClose}
+            onClick={() => {
+              setIsMobileNavOpen(false);
+              onClose();
+            }}
             className="mt-3.5 w-full py-2 bg-white text-[#4318FF] font-bold text-xs rounded-xl shadow-xs hover:bg-neutral-100 transition-colors flex items-center justify-center gap-1.5"
           >
             <ArrowLeft size={13} />
@@ -377,24 +404,34 @@ export default function AdminDashboard({ isOpen, onClose }) {
       {/* ═══════════════════════════════════════════════════════════
           HORIZON UI MAIN CONTENT & FLOATING NAVBAR
          ═══════════════════════════════════════════════════════════ */}
-      <div className="flex-1 flex flex-col overflow-hidden p-4">
+      <div className="flex-1 flex flex-col overflow-hidden p-2.5 sm:p-4">
         
         {/* Floating Horizon Topbar */}
-        <header className="h-20 bg-white/80 backdrop-blur-md rounded-[20px] px-6 flex items-center justify-between shadow-[0px_18px_40px_rgba(112,144,176,0.08)] shrink-0 z-10 mb-5">
-          {/* Breadcrumbs */}
-          <div>
-            <div className="text-xs font-semibold text-[#707EAE]">
-              <span>Pages</span> / <span className="capitalize">{activeTab}</span>
+        <header className="h-16 md:h-20 bg-white/90 backdrop-blur-md rounded-[16px] md:rounded-[20px] px-3 sm:px-6 flex items-center justify-between shadow-[0px_18px_40px_rgba(112,144,176,0.08)] shrink-0 z-10 mb-3 sm:mb-5">
+          {/* Left: Mobile Hamburger & Breadcrumbs */}
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <button
+              type="button"
+              onClick={() => setIsMobileNavOpen(true)}
+              className="md:hidden p-2 rounded-xl bg-[#F4F7FE] text-[#1B2559] hover:bg-[#EAEAEA] transition-colors"
+              title="Buka Navigasi"
+            >
+              <Menu size={20} />
+            </button>
+            <div>
+              <div className="text-[10px] md:text-xs font-semibold text-[#707EAE]">
+                <span>Pages</span> / <span className="capitalize">{activeTab}</span>
+              </div>
+              <h2 className="text-sm sm:text-base md:text-xl font-bold text-[#1B2559] capitalize leading-tight">
+                {activeTab === 'overview' ? 'Main Dashboard' : activeTab}
+              </h2>
             </div>
-            <h2 className="text-xl font-bold text-[#1B2559] capitalize">
-              {activeTab === 'overview' ? 'Main Dashboard' : activeTab}
-            </h2>
           </div>
 
           {/* Right Controls: Search, Notification, & Multi-Role Profile */}
-          <div className="flex items-center gap-3 bg-[#F4F7FE] p-2 rounded-[30px]">
-            {/* Search Input */}
-            <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-[30px] w-56 text-xs text-[#2B3674] shadow-xs">
+          <div className="flex items-center gap-1.5 sm:gap-3 bg-[#F4F7FE] p-1 sm:p-2 rounded-[30px]">
+            {/* Search Input (Hidden on mobile phones, visible on tablet/desktop) */}
+            <div className="hidden sm:flex items-center gap-2 bg-white px-3 py-1.5 sm:py-2 rounded-[30px] w-36 md:w-56 text-xs text-[#2B3674] shadow-xs">
               <Search size={14} className="text-[#A3AED0]" />
               <input
                 type="text"
@@ -410,41 +447,39 @@ export default function AdminDashboard({ isOpen, onClose }) {
               )}
             </div>
 
-            {/* Notification Bell */}
-            <div className="relative p-2 text-[#A3AED0] hover:text-[#2B3674] cursor-pointer">
+            {/* Notification Bell (Hidden on small mobile) */}
+            <div className="hidden sm:flex relative p-1.5 sm:p-2 text-[#A3AED0] hover:text-[#2B3674] cursor-pointer">
               <Bell size={18} />
               {needShippingCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#EE5D50]" />
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#EE5D50]" />
               )}
             </div>
 
             {/* Multi-Role Switcher Dropdown */}
-            <div className="flex items-center gap-2 bg-white pl-2 pr-3 py-1.5 rounded-[30px] shadow-xs">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#868CFF] to-[#4318FF] text-white flex items-center justify-center font-bold text-xs">
+            <div className="flex items-center gap-1.5 bg-white pl-1.5 pr-2 py-1 rounded-[30px] shadow-xs">
+              <div className="w-6 h-6 md:w-7 md:h-7 rounded-full bg-gradient-to-tr from-[#868CFF] to-[#4318FF] text-white flex items-center justify-center font-bold text-[10px] md:text-xs shrink-0">
                 {currentUser.avatar}
               </div>
-              <div className="flex flex-col">
-                <select
-                  value={currentUser.id}
-                  onChange={(e) => {
-                    const u = USERS.find((x) => x.id === parseInt(e.target.value));
-                    if (u) setCurrentUser(u);
-                  }}
-                  className="bg-transparent text-xs font-bold text-[#2B3674] outline-none cursor-pointer pr-1"
-                >
-                  {USERS.map((u) => (
-                    <option key={u.id} value={u.id} className="text-[#2B3674]">
-                      {u.name} ({u.roleLabel})
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <select
+                value={currentUser.id}
+                onChange={(e) => {
+                  const u = USERS.find((x) => x.id === parseInt(e.target.value));
+                  if (u) setCurrentUser(u);
+                }}
+                className="bg-transparent text-[11px] md:text-xs font-bold text-[#2B3674] outline-none cursor-pointer max-w-[85px] sm:max-w-none truncate"
+              >
+                {USERS.map((u) => (
+                  <option key={u.id} value={u.id} className="text-[#2B3674]">
+                    {u.name} ({u.roleLabel})
+                  </option>
+                ))}
+              </select>
             </div>
 
-            {/* Close Button */}
+            {/* Close Button to return to Storefront */}
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-white text-[#A3AED0] hover:text-[#EE5D50] hover:bg-red-50 flex items-center justify-center shadow-xs transition-colors"
+              className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white text-[#A3AED0] hover:text-[#EE5D50] hover:bg-red-50 flex items-center justify-center shadow-xs transition-colors"
               title="Close to Storefront"
             >
               <X size={16} />
