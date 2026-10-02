@@ -21,6 +21,7 @@ api/config.php
 *.key
 *.cert
 *.sql
+!database.sql
 *.sqlite
 
 # Editor directories and files
