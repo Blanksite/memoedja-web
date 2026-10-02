@@ -297,7 +297,7 @@ export default function AdminDashboard({ isOpen, onClose }) {
           {/* Brand Logo & Studio Mark */}
           <div className="pb-8 pt-2 px-2 border-b border-[#F4F7FE] flex items-center justify-between">
             <div>
-              <h1 className="font-serif text-xl tracking-[0.25em] font-bold text-[#1B2559] uppercase">
+              <h1 className="font-sans text-xl tracking-[0.25em] font-bold text-[#1B2559] uppercase">
                 MEMOEDJA
               </h1>
               <span className="text-[10px] font-sans font-semibold tracking-wider text-[#A3AED0] uppercase block">
